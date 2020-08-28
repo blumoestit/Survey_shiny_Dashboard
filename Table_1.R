@@ -26,5 +26,32 @@ for(i in 1:nrow(Q_100)) {
 }
 print(buttons)
 
+### Style action buttons
 
+## weiter
+style_weiter <- "color: white; 
+                 background-color: #01A75A; 
+                 position: relative; 
+                 left: 1%;
+                 height: 33px;
+                 width: 65px;
+                 text-align:center;
+                 text-indent: -2px;
+                 border-radius: 1px;
+                 border-width: 1px"
+## zurück
+style_zuruck <- "color: white; 
+                 background-color: #222D32"
+## zu den Ergebnissen
+style_Erg <- "color: white; 
+                 background-color: #A7004E; 
+                 position: relative; 
+                 left: 1%;
+                 height: 33px;
+                 width: 150px;
+                 text-align:center;
+                 text-indent: -2px;
+                 border-radius: 1px;
+                 border-width: 1px"
+## 
 

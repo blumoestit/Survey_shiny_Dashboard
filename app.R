@@ -88,82 +88,115 @@ body <- dashboardBody(
                     tabName = "q1-10",
                     fluidRow(
                       column(width = 3),
-                      column(width = 6,
-                             
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
                     buttons[1:20],#Survey Questins sourced from Table_1.R
-                    actionButton('jumpToP2', 'weiter', class = "btn-success"))
-                    )),
-                    tabItem(
+                    actionButton('jumpToP2', 'weiter', style = style_weiter)))
+                  ),
+                  tabItem(
                     tabName = "q11-20",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
                     buttons[21:40],
-                    actionButton('jumpbackToP1', 'zurück', style = "color: white; 
-                                                        background-color: #222D32" ),
-                    actionButton('jumpToP3', 'weiter', style = "color: white; 
-                     background-color: #01A75A; 
-                     position: relative; 
-                     left: 70%;
-                     height: 35px;
-                     width: 80px;
-                     text-align:center;
-                     text-indent: -2px;
-                     border-radius: 6px;
-                     border-width: 2px") 
+                    actionButton('jumpbackToP1', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP3', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q21-30",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[41:60]
+                    buttons[41:60],
+                    actionButton('jumpbackToP2', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP4', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q31-40",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[61:80]
+                    buttons[61:80],
+                    actionButton('jumpbackToP3', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP5', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q41-50",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[81:100]
+                    buttons[81:100],
+                    actionButton('jumpbackToP4', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP6', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q51-60",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[101:120]
+                    buttons[101:120],
+                    actionButton('jumpbackToP5', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP7', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q61-70",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[121:140]
+                    buttons[121:140],
+                    actionButton('jumpbackToP6', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP8', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q71-80",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[141:160]
+                    buttons[141:160],
+                    actionButton('jumpbackToP7', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP9', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q81-90",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[161:180]
+                    buttons[161:180],
+                    actionButton('jumpbackToP8', 'zurück', style = style_zuruck),
+                    actionButton('jumpToP10', 'weiter', style = style_weiter))) 
                   ),
                   tabItem(
                     tabName = "q91-100",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
                     h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
                     hr(),
-                    buttons[181:200]
+                    buttons[181:200],
+                    actionButton('jumpbackToP9', 'zurück', style = style_zuruck),
+                    actionButton('jumpToPErg', 'zu den Ergebnissen', style = style_Erg))) 
                   ),
                   
         tabItem(
-            tabName = "ErgTab"
+            tabName = "ErgTab",
+            h2("Ihre Ergebnisse")
         ),
         tabItem(
             tabName = "BeschTab",
@@ -197,20 +230,75 @@ ui <- dashboardPage(header, sidebar, body,
  
 
 server <- function(input, output, session) {
-  
+
+### Action buttons "weiter" and "zurück"
+  ## page 1
   observeEvent(input$jumpToP2, {
     updateTabItems(session, "tabs", "q11-20")
   })
-  
+  ## page 2
   observeEvent(input$jumpbackToP1, {
     updateTabItems(session, "tabs", "q1-10")
   })
-  
   observeEvent(input$jumpToP3, {
     updateTabItems(session, "tabs", "q21-30")
   })
-  
-  
+  ## page 3
+  observeEvent(input$jumpbackToP2, {
+    updateTabItems(session, "tabs", "q11-20")
+  })
+  observeEvent(input$jumpToP4, {
+    updateTabItems(session, "tabs", "q31-40")
+  })
+  ## page 4
+  observeEvent(input$jumpbackToP3, {
+    updateTabItems(session, "tabs", "q21-30")
+  })
+  observeEvent(input$jumpToP5, {
+    updateTabItems(session, "tabs", "q41-50")
+  })
+  ## page 5
+  observeEvent(input$jumpbackToP4, {
+    updateTabItems(session, "tabs", "q31-40")
+  })
+  observeEvent(input$jumpToP6, {
+    updateTabItems(session, "tabs", "q51-60")
+  })
+  ## page 6
+  observeEvent(input$jumpbackToP5, {
+    updateTabItems(session, "tabs", "q41-50")
+  })
+  observeEvent(input$jumpToP7, {
+    updateTabItems(session, "tabs", "q61-70")
+  })
+  ## page 7
+  observeEvent(input$jumpbackToP6, {
+    updateTabItems(session, "tabs", "q51-60")
+  })
+  observeEvent(input$jumpToP8, {
+    updateTabItems(session, "tabs", "q71-80")
+  })
+  ## page 8
+  observeEvent(input$jumpbackToP7, {
+    updateTabItems(session, "tabs", "q61-70")
+  })
+  observeEvent(input$jumpToP9, {
+    updateTabItems(session, "tabs", "q81-90")
+  })
+  ## page 9
+  observeEvent(input$jumpbackToP8, {
+    updateTabItems(session, "tabs", "q71-80")
+  })
+  observeEvent(input$jumpToP10, {
+    updateTabItems(session, "tabs", "q91-100")
+  })
+  ## page 10
+  observeEvent(input$jumpbackToP9, {
+    updateTabItems(session, "tabs", "q81-90")
+  })
+  observeEvent(input$jumpToPErg, {
+    updateTabItems(session, "tabs", "ErgTab")
+  })
   
 }
 
