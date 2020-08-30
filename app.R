@@ -1,6 +1,8 @@
 
 library(shiny)
 library(shinydashboard)
+library(DT)
+library(tidyr)
 
 
 source('Text_1.R')
@@ -196,8 +198,10 @@ body <- dashboardBody(
                   
         tabItem(
             tabName = "ErgTab",
-            h2("Ihre Ergebnisse")
+            h2("Ihre Ergebnisse"),
+            tableOutput(outputId = "answers_table")
         ),
+        
         tabItem(
             tabName = "BeschTab",
             h1("Scale Descriptions"),
@@ -299,6 +303,45 @@ server <- function(input, output, session) {
   observeEvent(input$jumpToPErg, {
     updateTabItems(session, "tabs", "ErgTab")
   })
+  
+### Create data table from the radioButtons answers
+
+  # answer names from the radio buttons are q1 to q100
+  
+        
+         
+            #df_answers1 <-data.frame("a" = input$q98, "b" = input$q99, "d" = input$q100)
+            
+          
+
+            # das funktioniert
+        #     observeEvent(input$jumpToPErg, {
+        # output$answers <- renderTable(Q_100)
+        #     })
+        #     
+            observeEvent(input$jumpToPErg, {
+              
+              df_answers_long <- data.frame()
+              questions <- c()
+              answers <- c()
+    
+                for(i in 1:5) {     
+                  questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
+                  answers[[i]] <- input[[paste0("q", Q_100[i,1])]]
+                  df_answers_long <- data.frame(questions, answers)
+                }
+          
+              
+              # Save to googlesheet
+              df_answers_wide <- df_answers_long %>% 
+                spread(key = questions, value = answers)
+              
+              
+              # Show as table in Results tab
+              df_answers <-reactive(df_answers_long)
+              output$answers_table <- renderTable(df_answers())
+              
+            })
   
 }
 

@@ -1,4 +1,5 @@
 library(shinyWidgets)
+library(tidyr)
 
 Q_100 <- read.csv("BigFiveQuestions.csv")
 Q_100
@@ -53,5 +54,26 @@ style_Erg <- "color: white;
                  text-indent: -2px;
                  border-radius: 1px;
                  border-width: 1px"
-## 
 
+
+### Data frame
+ 
+#   df_answers_long <- data.frame()
+#   questions <- c()
+#   answers <- c()
+#   
+#   
+#      for(i in 1:5) {      #nrow(Q_100)) {
+#        questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
+#        #answers[[i]] <- input[paste0(q, Q_100[i,1])] #c(paste0("input$q", Q_100[i, 1])) input[paste0(q, Q_100[i,1])]
+#        df_answers_long <- data.frame(questions, answers)
+#    }
+#    
+#   str(df_answers_long)
+#   
+#   df_answers_long$answers <- eval(parse(text = df_answers_long$answers))
+#   
+# df_answers_wide <- df_answers_long %>% 
+#                     spread(key = questions, value = answers)
+# 
+# str(df_answers_wide)
