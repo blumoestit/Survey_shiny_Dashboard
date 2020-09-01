@@ -3,12 +3,21 @@ library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
 library(DT)
-library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(tibble)
+
 library(googlesheets4)
 
 
 source('Text_1.R')
 source("Table_1.R")
+
+gs4_auth(path = ".secrets/dogwood-boulder-283009-f84cf0d697c8.json")
+
+ss <- gs4_get('https://docs.google.com/spreadsheets/d/12F4vDtIjgKbo1xrFxAAXIquk7o72dc6NfX5bHP-lnMY/edit#gid=990841242')
+
+
 tags$style(HTML(".checkbox-inline, .radio-inline {
     margin-right: 100px;
 }"))
@@ -384,10 +393,9 @@ server <- function(input, output, session) {
   # answer names from the radio buttons are q1 to q100
   observeEvent(input$jumpToPErg, {
               
-    df_answers_long <- data.frame()
+    df_answers_long <- tibble()
     questions <- c()
     answers <- c()
-    #demographics <- c()
     
       for(i in 1:5) {     
         questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
@@ -399,24 +407,23 @@ server <- function(input, output, session) {
            add_column(SysTime = Sys.time(), first = input$q_first, sex = input$q_sex, 
                       age = input$q_age, education = input$q_education, email = input$email)
       }
-    demographics <- reactive(data.frame(first_participation = input$q_first, sex = input$q_sex, 
-                               age = input$q_age, education = input$q_education, email = input$email))
+    
     answers_long <-reactive(df_answers_long)  
-    answers_wide <-reactive(df_answers_wide)  
-    #demographics_long <- reactive(demographics)
+    answers_wide <-reactive(df_answers_wide)
+    demographics <- reactive(tibble(first_participation = input$q_first, 
+                                        sex = input$q_sex, 
+                                        age = input$q_age, 
+                                        education = input$q_education, 
+                                        email = input$email))
               
   # Save to a google spreadsheet - use the wide table because the sheet_append() 
   # from package googlesheets4 add a new row at the bottom of the dataset in Google Sheets.
-   #df_answers_wide <- data.frame(a = 1, b = 1)
-    
-    sheet_append(ss, answers_wide(), sheet = "trials")
+   
+     sheet_append(ss, answers_wide(), sheet = "trials")
               
   # Show as table in Results tab
     output$answers_table <- renderTable(demographics())
     output$testtext <- renderText(input$q_first)
-    
-
-    
               
             })
   
