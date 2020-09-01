@@ -1,8 +1,10 @@
 
 library(shiny)
 library(shinydashboard)
+library(shinyWidgets)
 library(DT)
-library(tidyr)
+library(tidyverse)
+library(googlesheets4)
 
 
 source('Text_1.R')
@@ -54,6 +56,9 @@ sidebar <- dashboardSidebar(
                  ),
                  menuSubItem(text = "Fragen 91-100",
                              tabName = "q91-100"
+                 ),
+                 menuSubItem(text = "Für Statistik",
+                             tabName = "demographic"
                  )
         ),
         menuItem(text = "Ergebnisse",
@@ -83,7 +88,6 @@ body <- dashboardBody(
         ),
         tabItem(
           tabName = "TestTab",
-          h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
           hr()
         ),
                   tabItem(
@@ -193,13 +197,77 @@ body <- dashboardBody(
                     hr(),
                     buttons[181:200],
                     actionButton('jumpbackToP9', 'zurück', style = style_zuruck),
-                    actionButton('jumpToPErg', 'zu den Ergebnissen', style = style_Erg))) 
+                    actionButton('jumpToDemographic', 'weiter', style = style_weiter))) 
                   ),
+                  tabItem(
+                    tabName = "demographic",
+                    fluidRow(
+                      column(width = 3),
+                      column(width = 8,
+                             h2("Freiwilige fragen für statistische Zwecke"),
+                             hr(),
+                             
+                             prettyRadioButtons(inputId = "q_first",
+                                          label = "Haben Sie diesen Fragebogen hier
+                                                  auf der Seite schon jemals zuvor ausgefüllt?",
+                                          choices = c("Nein, das ist mein erster Test",
+                                                      "Ja, schon wenigstens ein mal gemacht"),
+                                          width = '150%',
+                                          status = "success",
+                                          selected = character()
+                                          ),
+                             hr(),
+                             prettyRadioButtons(inputId = "q_sex",
+                                          label = "Geschlecht",
+                                          choices = c("weiblich",
+                                                      "männlich",
+                                                      "anders",
+                                                      "keine Angabe"),
+                                          status = "success",
+                                          selected = character()),
+                             hr(),
+                             selectInput(inputId = "q_age", # pickerInput from shinyWidgets
+                                         label = "Ihr Alter",
+                                         choices = c("unter 18",
+                                                     "18-25",
+                                                     "26-35",
+                                                     "36-45",
+                                                     "46-55",
+                                                     "56-65",
+                                                     "66-75",
+                                                     "über 75"),
+                                         #choicesOpt = (list(style = "background: forestgreen; color: white;")),
+                                         selected = NULL
+                             ),
+                             br(),
+                             hr(),
+                             selectInput(inputId = "q_education",
+                                         label = "Ihr höchster erreichter Bildungsabschluss",
+                                         choices = c("kein Schulabschluss",
+                                                     "Hauptschulabschluss",
+                                                     "Realschulabschluss | mittlere Reife",
+                                                     "Fachhohschulreife",
+                                                     "Abitur",
+                                                     "abgeschlossenes Fachhochschulstudium",
+                                                     "abgeschlossenes Hochschulstudium")
+                             ),
+                             br(),
+                             hr(),
+                             textInput(inputId = "email",
+                                       label = "Ihre Emailadresse",
+                                       placeholder = "persona@beispiel.com"),
+                             
+                             br(),br(),br(),
+                             actionButton('jumpbackToP10', 'zurück', style = style_zuruck),
+                             actionButton('jumpToPErg', 'zu den Ergebnissen', style = style_Erg))
+                      )
+                    ),
                   
         tabItem(
             tabName = "ErgTab",
             h2("Ihre Ergebnisse"),
-            tableOutput(outputId = "answers_table")
+            tableOutput(outputId = "answers_table"),
+            textOutput(outputId = "testtext")
         ),
         
         tabItem(
@@ -228,7 +296,7 @@ body <- dashboardBody(
 # Define UI for application that draws a histogram
 ui <- dashboardPage(header, sidebar, body,
                     skin = "green",
-                    title = "Der 'Big Five' Persönlichkeitstest")
+                    title = "Der HEXACO-PI-R Persönlichkeitstest")
 
 # Define server
  
@@ -300,6 +368,13 @@ server <- function(input, output, session) {
   observeEvent(input$jumpbackToP9, {
     updateTabItems(session, "tabs", "q81-90")
   })
+  observeEvent(input$'jumpToDemographic', {
+    updateTabItems(session, "tabs", "demographic")
+  })
+  ## page 11
+  observeEvent(input$jumpbackToP10, {
+    updateTabItems(session, "tabs", "q91-100")
+  })
   observeEvent(input$jumpToPErg, {
     updateTabItems(session, "tabs", "ErgTab")
   })
@@ -307,39 +382,41 @@ server <- function(input, output, session) {
 ### Create data table from the radioButtons answers
 
   # answer names from the radio buttons are q1 to q100
-  
-        
-         
-            #df_answers1 <-data.frame("a" = input$q98, "b" = input$q99, "d" = input$q100)
-            
-          
-
-            # das funktioniert
-        #     observeEvent(input$jumpToPErg, {
-        # output$answers <- renderTable(Q_100)
-        #     })
-        #     
-            observeEvent(input$jumpToPErg, {
+  observeEvent(input$jumpToPErg, {
               
-              df_answers_long <- data.frame()
-              questions <- c()
-              answers <- c()
+    df_answers_long <- data.frame()
+    questions <- c()
+    answers <- c()
+    #demographics <- c()
     
-                for(i in 1:5) {     
-                  questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
-                  answers[[i]] <- input[[paste0("q", Q_100[i,1])]]
-                  df_answers_long <- data.frame(questions, answers)
-                }
+      for(i in 1:5) {     
+        questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
+        answers[[i]] <- input[[paste0("q", Q_100[i, 1])]]
           
+        df_answers_long <- tibble(questions, answers)
+         df_answers_wide <- df_answers_long %>% 
+           spread(key = questions, value = answers) %>% 
+           add_column(SysTime = Sys.time(), first = input$q_first, sex = input$q_sex, 
+                      age = input$q_age, education = input$q_education, email = input$email)
+      }
+    demographics <- reactive(data.frame(first_participation = input$q_first, sex = input$q_sex, 
+                               age = input$q_age, education = input$q_education, email = input$email))
+    answers_long <-reactive(df_answers_long)  
+    answers_wide <-reactive(df_answers_wide)  
+    #demographics_long <- reactive(demographics)
               
-              # Save to googlesheet
-              df_answers_wide <- df_answers_long %>% 
-                spread(key = questions, value = answers)
+  # Save to a google spreadsheet - use the wide table because the sheet_append() 
+  # from package googlesheets4 add a new row at the bottom of the dataset in Google Sheets.
+   #df_answers_wide <- data.frame(a = 1, b = 1)
+    
+    sheet_append(ss, answers_wide(), sheet = "trials")
               
-              
-              # Show as table in Results tab
-              df_answers <-reactive(df_answers_long)
-              output$answers_table <- renderTable(df_answers())
+  # Show as table in Results tab
+    output$answers_table <- renderTable(demographics())
+    output$testtext <- renderText(input$q_first)
+    
+
+    
               
             })
   

@@ -1,7 +1,7 @@
 library(shinyWidgets)
 library(tidyr)
 
-Q_100 <- read.csv("BigFiveQuestions.csv")
+Q_100 <- read.csv("Questionnaire.csv")
 Q_100
 #Q_100[,2]
 #Q_100[,3:7]
@@ -77,3 +77,21 @@ style_Erg <- "color: white;
 #                     spread(key = questions, value = answers)
 # 
 # str(df_answers_wide)
+
+## save the respods to google spreadsheet
+  
+  # Authorisation
+  #gs4_auth() #blumoestit@gmail.com
+  #
+  # Write a new spreadsheet
+   ss <- gs4_create(
+     "ShinyApp_Personality_Survey_responds",
+        sheets = list(trials = data.frame(qn1 = 1, qn2 = 2,	qn3 = 3, qn4 = 4, qn5 = 5, SysTime = Sys.time(),
+                                          first_participation = "test", sex = "test", 
+                                          age = "test", education = "test", email = "test"))
+    )
+
+   # sheet_write(data = answers_wide,
+   #            ss = "ShinyApp2_Personality_Survey_responds", # file ID
+   #            sheet = "trials")
+
