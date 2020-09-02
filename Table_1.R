@@ -54,7 +54,21 @@ style_Erg <- "color: white;
                  border-radius: 1px;
                  border-width: 1px"
 
-### Data frame
+## used in tabBox
+tab_style_color <- tags$style(".nav-tabs {background: #f4f4f4;}
+                .nav-tabs-custom .nav-tabs li.active:hover a, 
+                .nav-tabs-custom .nav-tabs li.active a {background-color: #fff;
+                                                        border-color: #fff;
+                                                      }
+                .nav-tabs-custom .nav-tabs li.active {border-top-color: 
+                                                      #A7004E;
+                                                      }"
+)
+
+
+
+
+#### Data frame #####
 ## save the respods to google spreadsheet
   
   # Authorisation
