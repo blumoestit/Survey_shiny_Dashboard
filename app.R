@@ -119,11 +119,19 @@ body <- dashboardBody(
           
   #### DER TEST ####
           tabItem(tabName = "DerTestTab",
-                  h2("Der 100-Fragen Persönlichkeitstest"),
+                  fixedRow(
+                    column(width = 1),
+                    column(width = 10,      
+                  h2("Füllen Sie bitte den Fragebogen aus"),
+                  hr(),
+                      )
+                  ),
                   fixedRow(
                     tab_style_color, # defined in 'Table_1.R'
-                    tabItem(tabName = "null", column(width = 1)),
-                    tabBox(width = 10, id = "tabBoxTest",
+                    #tabItem(tabName = "null", column(width = 1)),
+                    column(width = 1),
+                    column(width = 10,
+                    tabBox(width = 11, id = "tabBoxTest",
                         tabPanel(value = "q1-10",
                           title = "Fragen 1-10",
                           h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
@@ -227,29 +235,31 @@ body <- dashboardBody(
                                 hr(),
                                 selectInput(inputId = "q_age", # pickerInput from shinyWidgets
                                             label = "Ihr Alter",
-                                            choices = c(10:101),
+                                            choices = c(" ", 10:101),
                                            #choicesOpt = (list(style = "background: forestgreen; color: white;")),
-                                             selected = NULL
+                                             selected = " "
                                              ),
                                 br(),
                                 hr(),
                                 selectInput(inputId = "q_education",
                                             label = "Ihr höchster erreichter Bildungsabschluss",
-                                            choices = c("Ohne allgemeinen Schulabschluss",
+                                            choices = c(#" ",
+                                                        "Ohne allgemeinen Schulabschluss",
                                                         "noch in schulischer Ausbildung",
                                                         "Haupt-(Volks-)schulabschluss",
                                                         "Abschluss der polytechnischen Oberschule",
                                                         "Realschul- oder gleichwertiger Abschluss",
                                                         "Fachhohschul- oder Hochschulreife",
-                                                        "Fachhochschulstudium Bachelor",
-                                                        "Fachhochschulstudium Master",
-                                                        "Fachhochschulstudium Promotion",
-                                                        "Hochschulstudium Bachelor",
-                                                        "Hochschulstudium Master/Magister",
-                                                        "Hochschulstudium Promotion",
-                                                        "Staatsexamen",
-                                                        "Meister",
-                                                        "Ohne Angabe zur Art des Abschlusses")
+                                                        "Berufsausbildungsvorbereitung" = "DQR1",
+                                                        "Hauptschule / Berufsfachschule" = "DQR2",
+                                                        "Realschule / Mittlere Reife (MSA) / Duale Berufsausbildung (2 Jahre)" = "DQR3",
+                                                        "Abitur / Fachhochschulreife / Duale Berufsausbildung (3 Jahre)" = "DQR4",
+                                                        "Zertifizierter IT-Spezialist / Geprüfter Servicetechniker" = "DQR5",
+                                                        "Bachelor / Diplom (FH) / Staatsexam / Fachwirt" = "DQR6",
+                                                        "Master / Diplom (Univ.) / Magister / Staatsexamen" = "DQR7",
+                                                        "Promotion" = "DQR8",
+                                                        " "),
+                                            selected = " "
                                 ),
                                 br(),
                                 hr(),
@@ -263,7 +273,7 @@ body <- dashboardBody(
                                 )
                        )
                        
-                  
+                    )
                   )
           ),
   
@@ -451,8 +461,31 @@ body <- dashboardBody(
           tabItem(
               tabName = "ErgTab",
               h2("Ihre Ergebnisse"),
-              tableOutput(outputId = "answers_table"),
-              textOutput(outputId = "testtext")
+              fluidRow(
+                column(width = 1),
+                column(width = 10,
+                       box(
+                         width = 12,
+                         status = "success",
+                         h2(text1_t),
+                         text1
+                          #tableOutput(outputId = "answers_table"),
+                          #textOutput(outputId = "testtext")
+                       ),
+                       box(
+                         width = 12,
+                         status = "success",
+                         h2("Zusammenfassung des Persönlichkeitsprofils"),
+                         plotOutput(outputId = "box_ggplot")
+                       ),
+                       box(
+                         width = 12,
+                         status = "success",
+                         h2("Persönlichkeitsmerkmale")
+                       )
+                       
+                )
+              )
           ),
           
           tabItem(
@@ -621,6 +654,10 @@ server <- function(input, output, session) {
   # Show as table in Results tab
     output$answers_table <- renderTable(demographics())
     output$testtext <- renderText(input$q_first)
+    
+    output$box_ggplot <- renderPlot({
+      box_plot
+    })
               
             })
   

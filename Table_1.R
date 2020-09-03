@@ -85,3 +85,57 @@ tab_style_color <- tags$style(".nav-tabs {background: #f4f4f4;}
 #                                           age = "test", education = "test", email = "test")))
 #   }
 
+
+
+## Pseudo Box Plot
+comparison_study <- read.csv("Student_Sample_mean_sd_n1126.csv")
+comparison_study$factor <- factor(comparison_study$factor, levels = c("Ehrlichkeit - Demut", "Emotionalität",
+                                                                      "Extraversion", "Verträglichkeit",
+                                                                      "Gewissenhaftigkeit", "Offenheit für Erfahrungen",
+                                                                      "Altruism"))
+comparison_study_percentile <- comparison_study %>%
+  mutate(perc_10 = qnorm(0.1, mean = total_mean_self, sd = total_sd_self),
+         perc_90 = qnorm(0.9, mean = total_mean_self, sd = total_sd_self))
+
+#perc_10 <- qnorm(0.1, mean, sd)
+#perc_90 <- qnorm(0.9, mean, sd)
+
+#df_rect <- data.frame(x = c(perc_10, perc_10, perc_90, perc_90))
+
+box_plot <- ggplot(comparison_study_percentile) +
+  geom_rect(aes(xmin = perc_10, xmax = perc_90, ymin = 0, ymax = 0.3), fill = "#B6E5CF",  alpha = 0.9) +
+  geom_segment(aes(x = total_mean_self, xend = total_mean_self, y = 0, yend = 0.3), linetype = "solid",
+               color = "#01A75A", size = 2, alpha = 0.7) +
+  geom_point(aes(x = xintercept, y = 0.15), color = "#A7004E", size = 7) +
+  facet_wrap(~factor, strip.position = "left", ncol = 1) +
+  scale_x_continuous(limits = c(1, 5), position = "top",
+                     breaks = seq(1, 5, by = 1)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 0.3)) +
+  theme_classic() +
+  theme(axis.line.x = element_blank(),
+        axis.line.y = element_blank(),
+        axis.text.x = element_text(size = 22, margin = margin(10, 0, 0, 0, "pt"), face = "bold", color = "#222D32"),
+        axis.text.y = element_blank(),
+        axis.title.x = element_blank(),#element_text(size = 30, face = "bold", color = "#222D32",
+        #hjust = -0.0, vjust = 5.8
+        #),
+        axis.title.y = element_blank(),
+        axis.ticks.length.x = grid::unit(10, "pt"),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.margin = margin(10, 40, 10, 40, "pt"),
+        plot.title = element_text(size = 40, face = "bold.italic", color = "#222D32"),
+        panel.background = element_rect(fill = "#ECF0F5"),
+        plot.background = element_rect(fill = "#ECF0F5"),
+        panel.grid.major.x = element_line(linetype = "solid", size = 0.5, color = "grey"),
+        strip.background = element_rect(fill = "#ECF0F5", color = "#ECF0F5"),
+        #strip.placement = "outside",
+        strip.text.y.left = element_text(angle = 0, size = 16, face = "bold", hjust = 0)
+  ) #+
+#xlab("Score") +
+#ggtitle("Ehrlickeit-Demut")
+
+
+
+
+
