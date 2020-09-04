@@ -26,6 +26,7 @@ tags$style(HTML(".checkbox-inline, .radio-inline {
 
 
 
+
 #### header ####
 header <- dashboardHeader(title = "Persönlichkeitstest"#,
                           #dropdownMenu(type = "messages")
@@ -487,7 +488,7 @@ body <- dashboardBody(
                 )
               )
           ),
-          
+  #### BESCHREIBUNG ####       
           tabItem(
               tabName = "BeschTab",
               h1("Scale Descriptions"),
@@ -606,7 +607,28 @@ server <- function(input, output, session) {
     
     
 #### Create data table from the radioButtons answers ####
+  
+    # Save plot in reactive
+    plot.dat <- reactiveValues(main=NULL, layer1=NULL)
+    plot.dat$main <- box_plot
+    
+    observe({
+      print("render")
+      output$box_ggplot <- renderPlot({ plot.dat$main + plot.dat$layer1 })
+    })
+    
+    # observeEvent(input$add_bars,{
+    #   # Calculate standard deviation
+    #   plot.dat$layer1 <- geom_point(aes(x = xintercept, # the responder's mean value
+    #                                     y = 0.15), 
+    #                                 color = color_purple, 
+    #                                 size = 7)
+    # })
+    # 
 
+
+
+    
   # answer names from the radio buttons are q1 to q100
   observeEvent(input$jumpToPErg, {
               
@@ -648,18 +670,19 @@ server <- function(input, output, session) {
               
   # Save to a google spreadsheet - use the wide table because the sheet_append() 
   # from package googlesheets4 add a new row at the bottom of the dataset in Google Sheets.
-   
      sheet_append(ss, answers_wide(), sheet = "trials")
               
   # Show as table in Results tab
-    output$answers_table <- renderTable(demographics())
-    output$testtext <- renderText(input$q_first)
-    
-    output$box_ggplot <- renderPlot({
-      box_plot
-    })
+    # output$answers_table <- renderTable(demographics())
+    # output$testtext <- renderText(input$q_first)
+
+  # Show the updated box_plot with responder results (points)
+     #output$box_ggplot <- box_plot_respond
+     plot.dat$layer1 <- boxplot_respond
+
               
             })
+
   
 }
 
