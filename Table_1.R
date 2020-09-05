@@ -5,7 +5,7 @@ library(dplyr)
 
 #### LOAD QUESTIONNAIRE ####
   Q_100 <- read.csv("Questionnaire.csv")
-
+  Q_100$questions <- as.character(Q_100$questions)
 
   
 #### ANSWER BUTTON ####
@@ -29,6 +29,7 @@ library(dplyr)
   }
 
 
+  
   
 #### STYLE ACTION BUTTONS ####
 
@@ -107,7 +108,7 @@ theme_survey <- function(base_size = 11,
                 base_line_size = base_line_size) %+replace%
     theme(axis.line.x = element_blank(),
           axis.line.y = element_blank(),
-          axis.text.x = element_text(size = 22, 
+          axis.text.x = element_text(size = 18, 
                                      margin = margin(10, 0, 0, 0, "pt"), 
                                      face = "bold", 
                                      color = color_black),
@@ -147,13 +148,16 @@ theme_survey <- function(base_size = 11,
 #### PSEUDO BOX PLOT ####
 
   comparison_study <- read.csv("Student_Sample_mean_sd_n1126.csv")
-  comparison_study$factor <- factor(comparison_study$factor, levels = c("Ehrlichkeit - Demut", "Emotionalität",
+  comparison_study$Factor <- factor(comparison_study$Factor, levels = c("Ehrlichkeit - Demut", "Emotionalität",
                                                                         "Extraversion", "Verträglichkeit",
                                                                         "Gewissenhaftigkeit", "Offenheit für Erfahrungen",
                                                                         "Altruism"))
   comparison_study_percentile <- comparison_study %>%
     mutate(perc_10 = qnorm(0.1, mean = total_mean_self, sd = total_sd_self),
-           perc_90 = qnorm(0.9, mean = total_mean_self, sd = total_sd_self))
+           perc_90 = qnorm(0.9, mean = total_mean_self, sd = total_sd_self),
+           max_point_y = dnorm(x = total_mean_self, mean = total_mean_self, sd = total_sd_self))
+  
+  
 
   box_plot <- ggplot(comparison_study_percentile) +
                 geom_rect(aes(xmin = perc_10, # green rectangle from 10 to 90 percentile
@@ -174,7 +178,7 @@ theme_survey <- function(base_size = 11,
                 #                y = 0.15), 
                 #            color = color_purple, 
                 #            size = 7) +
-                facet_wrap(~factor, strip.position = "left", 
+                facet_wrap(~Factor, strip.position = "left", 
                            ncol = 1) +
                 scale_x_continuous(limits = c(1, 5), 
                                    position = "top",
@@ -185,13 +189,113 @@ theme_survey <- function(base_size = 11,
                   theme(panel.grid.major.y = element_blank())
 
 
-  boxplot_respond <- geom_point(aes(x = xintercept, # the responder's mean value
-                                                 y = 0.15),
-                                             color = color_purple,
-                                             size = 7)
+  
 
   
 #### NORMAL DISTRINUTION PLOT ####
-
+  # mean <- 3.19
+  # sd <- 0.62
+  # xintercept <- 2.82
+  # # y <- dnorm(mean, mean, sd)
+  # # y
+  # 
+  # perc_10 <- qnorm(0.1, mean, sd)
+  # perc_90 <- qnorm(0.9, mean, sd)
+  # perc_10
+  # perc_90
   
+
+dnorm_ggplot <- function(total_mean_self, total_sd_self, max_point_y, mean_response) {
+  
+  ggplot(data = data.frame(x = c(1, 5)), aes(x)) +
+    stat_function(fun = dnorm, # dnorm curve
+                  n = 1126, 
+                  args = list(mean = total_mean_self, 
+                  sd = total_sd_self), 
+                  size = 2, 
+                  color = color_darkgreen) +
+    geom_segment(aes(x = total_mean_self, # mean line
+                     xend = total_mean_self, 
+                     y = 0, 
+                     yend = max_point_y), 
+                 linetype = "dashed", 
+                 color = color_darkgreen, 
+                 size = 1.5, 
+                 alpha = 0.7) +
+    scale_x_continuous(expand = c(0.05, 0.1, 0.05, 0.05), 
+                       limits = c(0.8, 5.5), 
+                       breaks = seq(1, 5, by = 1)) +
+    scale_y_continuous(expand = c(0.02, 0, 0, 0.05)) +
+    theme_survey() +
+    theme(panel.grid.major.y = element_blank(),
+          plot.margin = margin(10, 5, 10, 10, "pt")) + 
+    geom_text(aes(x = total_mean_self, 
+                  y = max_point_y+0.05, 
+                  label = "Mittelwert der Vergleichsgruppe"),
+                  size = 6, 
+                  color = color_darkgreen) +
+    xlab("Score")
+}
+  
+  # dnorm_ggplot_1 <- dnorm_ggplot(comparison_study_percentile$total_mean_self[[1]], comparison_study_percentile$total_sd_self[[1]], 
+  #                                comparison_study_percentile$max_point_y[[1]], comparison_study_percentile$mean_response[[1]])
+  
+  dnorm_ggplot_1 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Ehrlichkeit - Demut"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Ehrlichkeit - Demut"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Ehrlichkeit - Demut"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Ehrlichkeit - Demut"]
+  )
+  
+  dnorm_ggplot_2 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Emotionalität"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Emotionalität"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Emotionalität"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Emotionalität"]
+  )
+  
+  dnorm_ggplot_3 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Extraversion"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Extraversion"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Extraversion"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Extraversion"]
+  )
+  
+  dnorm_ggplot_4 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Verträglichkeit"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Verträglichkeit"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Verträglichkeit"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Verträglichkeit"]
+  )
+  
+  dnorm_ggplot_5 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Gewissenhaftigkeit"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Gewissenhaftigkeit"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Gewissenhaftigkeit"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Gewissenhaftigkeit"]
+  )
+  
+  dnorm_ggplot_6 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Offenheit für Erfahrungen"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Offenheit für Erfahrungen"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Offenheit für Erfahrungen"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Offenheit für Erfahrungen"]
+  )
+  
+  dnorm_ggplot_7 <- dnorm_ggplot(
+    comparison_study_percentile$total_mean_self[comparison_study_percentile$Factor == "Altruism"],
+    comparison_study_percentile$total_sd_self[comparison_study_percentile$Factor == "Altruism"],
+    comparison_study_percentile$max_point_y[comparison_study_percentile$Factor == "Altruism"],
+    comparison_study_percentile$mean_response[comparison_study_percentile$Factor == "Altruism"]
+  )
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
   
