@@ -7,6 +7,7 @@ library(tidyr)
 library(dplyr)
 library(tibble)
 library(googlesheets4)
+library(shinyalert)
 
 #### source ####
 source('Text_1.R')
@@ -35,12 +36,12 @@ header <- dashboardHeader(title = "Persönlichkeitstest"#,
 
 #### sidebar ####
 sidebar <- dashboardSidebar(
-    sidebarMenu(id = "tabs",
+    sidebarMenu(id = "tabs", 
         menuItem(text = "Home",
                  tabName = "HomeTab",
                  icon = icon('home')
         ),
-        menuItem(text = "Der Test",
+        menuItem(text = "Der Test", 
                  tabName = "DerTestTab",
                  icon = icon('check-square')),
         # menuItem(text = "Test",
@@ -94,7 +95,7 @@ sidebar <- dashboardSidebar(
 
 
 #### body ####
-body <- dashboardBody(
+body <- dashboardBody(useShinyalert(),
   # tags$head(
   #   tags$style(
   #     "body{
@@ -129,10 +130,10 @@ body <- dashboardBody(
           ),
           
   #### DER TEST ####
-          tabItem(tabName = "DerTestTab",
+          tabItem(tabName = "DerTestTab", 
                   fixedRow(
                     column(width = 1),
-                    column(width = 10,      
+                    column(width = 11,      
                   h2("Füllen Sie bitte den Fragebogen aus"),
                   hr(),
                       )
@@ -141,7 +142,7 @@ body <- dashboardBody(
                     tab_style_color, # defined in 'Table_1.R'
                     #tabItem(tabName = "null", column(width = 1)),
                     column(width = 1),
-                    column(width = 10,
+                    column(width = 11,
                     tabBox(width = 11, id = "tabBoxTest",
                         tabPanel(value = "q1-10",
                           title = "Fragen 1-10",
@@ -609,6 +610,7 @@ body <- dashboardBody(
 
 
 
+
 #### Define server ####
 server <- function(input, output, session) {
 
@@ -619,14 +621,14 @@ server <- function(input, output, session) {
     })
     ## page 1
     observeEvent(input$jumpToP2, {
-      updateTabsetPanel(session, "tabBoxTest", "q11-20")
+      updateTabItems(session, "tabBoxTest", "q11-20")
     })
     ## page 2
     observeEvent(input$jumpbackToP1, {
-      updateTabsetPanel(session, "tabBoxTest", "q1-10")
+      updateTabItems(session, "tabBoxTest", "q1-10")
     })
     observeEvent(input$jumpToP3, {
-      updateTabsetPanel(session, "tabBoxTest", "q21-30")
+      updateTabItems(session, "tabBoxTest", "q21-30")
     })
     ## page 3
     observeEvent(input$jumpbackToP2, {
@@ -752,207 +754,232 @@ server <- function(input, output, session) {
     
     
     
-  # answer names from the radio buttons are q1 to q100
-  observeEvent(input$jumpToPErg, {
-              
-    df_answers_long <- tibble()
-    questions <- c()
-    answers <- c()
     
-    # if(is.null(input$email)) {
-    #   input$email <- input$q_sex
-    # } else {
-    #   input$email
-    # }
+#### observeEvent radio buttons q1 to q100 ####
+  observeEvent(input$jumpToPErg, {
+    
     ema <- reactive({
       if (input$email == "")
         paste0("keine Angabe")
     })
     
-      for(i in 1:100) {     
+    df_answers_long <- tibble()
+    questions <- c()
+    answers <- c()
+    
+    n <- 100
+
+      for(i in 1:n) { 
         questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
-        answers[[i]] <- input[[paste0("q", Q_100[i, 1])]]
-          
+        current_input <- input[[paste0("q", Q_100[i, 1])]]
+        answers[[i]] <- if (is.null(current_input)) { NA } else { current_input}
         df_answers_long <- tibble(questions, answers)
-         df_answers_wide <- df_answers_long %>% 
-           spread(key = questions, value = answers) %>% 
-           add_column(first = input$q_first, sex = input$q_sex, 
-                      age = input$q_age, education = input$q_education, 
+      }
+    
+    if (any(is.na(df_answers_long$answers))) {
+      shinyalert(title = "Noch nicht alle Fragen beantwortet! Gehen Sie bitte zurück zu Frage(n): ",
+                 text = which(is.na(df_answers_long$answers)),
+                 type = "warning",
+                 showCancelButton = TRUE,
+                 showConfirmButton = TRUE,
+                 confirmButtonCol = color_darkgreen,
+                 callbackR = function(){ updateTabsetPanel(session, "tabs", "DerTestTab") })
+    } else {
+
+
+
+    
+    
+      # Responds data - create a means for facets
+      
+    if (any(is.na(df_answers_long))){
+      shinyalert("Button Pushed", "Proceed?", type = "success",showCancelButton = TRUE, showConfirmButton = TRUE)
+    } else {
+
+      df_answers_wide <- df_answers_long %>%
+           spread(key = questions, value = answers) %>%
+           add_column(first = input$q_first, sex = input$q_sex,
+                      age = input$q_age, education = input$q_education,
                       email = ema(),
                       timestamp = Sys.time())
-      # Responds data - create a means for facets
+
+
          answers_long_responds <- df_answers_long %>%
                                   left_join(Q_100 , by = "questions") %>%
-                                  select(-starke.Ablehnung, -Ablehnung, -neutral, -Zustimmung,-starke.Zustimmung, -Q_Id) %>% 
+                                  select(-starke.Ablehnung, -Ablehnung, -neutral, -Zustimmung,-starke.Zustimmung, -Q_Id) %>%
                                   mutate(Factor = factor(Factor, levels = c("Ehrlichkeit - Demut", "Emotionalität",
                                                                            "Extraversion", "Verträglichkeit",
                                                                            "Gewissenhaftigkeit", "Offenheit für Erfahrungen",
                                                                            "Altruism")),
-                                        answersRN = stringr::str_c(answers, Reverse)) %>% 
+                                        answersRN = stringr::str_c(answers, Reverse)) %>%
                                   mutate(answers_right_order = ifelse(answersRN == "1R", "5",
                                                                 ifelse(answersRN == "2R", "4",
                                                                  ifelse(answersRN == "4R", "2",
-                                                                  ifelse(answersRN == "5R", "1", answers))))) %>% 
-                                  mutate(answers_right_order = as.numeric(answers_right_order)) %>% 
-                                  group_by(Factor) %>% 
+                                                                  ifelse(answersRN == "5R", "1", answers))))) %>%
+                                  mutate(answers_right_order = as.numeric(answers_right_order)) %>%
+                                  group_by(Factor) %>%
                                   summarise(mean_response = mean(answers_right_order))
 
-      
-      }
-    
-    
-    answers_long <-reactive(df_answers_long)  
+
+
+
+   answers_long <-reactive(df_answers_long)
+
     answers_wide <-reactive(df_answers_wide)
-    demographics <- reactive(tibble(first_participation = input$q_first, 
-                                        sex = input$q_sex, 
-                                        age = input$q_age, 
-                                        education = input$q_education, 
+    demographics <- reactive(tibble(first_participation = input$q_first,
+                                        sex = input$q_sex,
+                                        age = input$q_age,
+                                        education = input$q_education,
                                         email = input$email))
-    answers_long_resp <- reactive(answers_long_responds) 
-    
+    answers_long_resp <- reactive(answers_long_responds)
+
     answers_long_re <- answers_long_resp() # create not reactive data frame to boxplot_respond in geom_point()
-    
+
     answers_long_re_DT <- answers_long_resp()
-    
-    answers_long_re_DT <-  answers_long_re_DT %>% 
+
+    answers_long_re_DT <-  answers_long_re_DT %>%
       rename("Merkmal" = "Factor", "Ihr Ergebnis" = "mean_response")
-    
-    comparison_study_percentile <- comparison_study_percentile %>% 
+
+    comparison_study_percentile <- comparison_study_percentile %>%
       left_join(answers_long_re, by = "Factor")
-    
-    comparison_study_percentile$Factor <- factor(comparison_study_percentile$Factor, 
+
+    comparison_study_percentile$Factor <- factor(comparison_study_percentile$Factor,
                                             levels = c("Ehrlichkeit - Demut", "Emotionalität",
                                                         "Extraversion", "Verträglichkeit",
                                                           "Gewissenhaftigkeit", "Offenheit für Erfahrungen",
                                                              "Altruism"))
 
-      
-  # Save to a google spreadsheet - use the wide table because the sheet_append() 
+
+
+
+
+
+  # Save to a google spreadsheet - use the wide table because the sheet_append()
   # from package googlesheets4 add a new row at the bottom of the dataset in Google Sheets.
      #sheet_append(ss, answers_wide(), sheet = "trials")
-              
+
   # Show as table in Results tab
-    
+
     output$answers_table <- renderTable(answers_long_re_DT)
-    # output$answers_table <- renderTable(demographics())
+  output$answers_table <- renderTable(answers_long())
+     }
     # output$testtext <- renderText(input$q_first)
 
-     
+
   # Show the updated box_plot with responder results (points)
-  # 
-  # 
+  #
+  #
      #output$box_ggplot <- box_plot_respond
     boxplot_respond <- geom_point(aes(x = comparison_study_percentile$mean_response, # the responder's mean value
                                 y = 0.15),
                               color = color_purple,
                               size = 7)
-    
+
     plot.dat$layer1 <- boxplot_respond
 
-    
+
     ### dnorm_ggplots
-    
+
     plot.dat1$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[6]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[6]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[6]], 2))),
-                                       size = 6, 
-                                       color = color_purple) 
+                                       size = 6,
+                                       color = color_purple)
     plot.dat1$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[6]],
                                             xend = comparison_study_percentile$mean_response[[6]],
                                             y = 0,
                                             yend = comparison_study_percentile$max_point_y[[6]]+0.08,
-                                            color = color_purple, 
-                                            size = 2, 
+                                            color = color_purple,
+                                            size = 2,
                                             alpha = 0.8)
-    
+
     plot.dat2$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[5]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[5]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[5]], 2))),
-                                   size = 6, 
-                                   color = color_purple) 
+                                   size = 6,
+                                   color = color_purple)
     plot.dat2$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[5]],
                                   xend = comparison_study_percentile$mean_response[[5]],
                                   y = 0,
                                   yend = comparison_study_percentile$max_point_y[[5]]+0.08,
-                                  color = color_purple, 
-                                  size = 2, 
+                                  color = color_purple,
+                                  size = 2,
                                   alpha = 0.8)
-    
+
     plot.dat3$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[4]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[4]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[4]], 2))),
-                                   size = 6, 
-                                   color = color_purple) 
+                                   size = 6,
+                                   color = color_purple)
     plot.dat3$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[4]],
                                   xend = comparison_study_percentile$mean_response[[4]],
                                   y = 0,
                                   yend = comparison_study_percentile$max_point_y[[4]]+0.08,
-                                  color = color_purple, 
-                                  size = 2, 
+                                  color = color_purple,
+                                  size = 2,
                                   alpha = 0.8)
-    
+
     plot.dat4$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[3]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[3]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[3]], 2))),
-                                   size = 6, 
-                                   color = color_purple) 
+                                   size = 6,
+                                   color = color_purple)
     plot.dat4$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[3]],
                                   xend = comparison_study_percentile$mean_response[[3]],
                                   y = 0,
                                   yend = comparison_study_percentile$max_point_y[[3]]+0.08,
-                                  color = color_purple, 
-                                  size = 2, 
+                                  color = color_purple,
+                                  size = 2,
                                   alpha = 0.8)
-    
+
     plot.dat5$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[2]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[2]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[2]], 2))),
-                                   size = 6, 
-                                   color = color_purple) 
+                                   size = 6,
+                                   color = color_purple)
     plot.dat5$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[2]],
                                   xend = comparison_study_percentile$mean_response[[2]],
                                   y = 0,
                                   yend = comparison_study_percentile$max_point_y[[2]]+0.08,
-                                  color = color_purple, 
-                                  size = 2, 
+                                  color = color_purple,
+                                  size = 2,
                                   alpha = 0.8)
-    
+
     plot.dat6$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[1]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[1]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[1]], 2))),
-                                   size = 6, 
-                                   color = color_purple) 
+                                   size = 6,
+                                   color = color_purple)
     plot.dat6$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[1]],
                                   xend = comparison_study_percentile$mean_response[[1]],
                                   y = 0,
                                   yend = comparison_study_percentile$max_point_y[[1]]+0.08,
-                                  color = color_purple, 
-                                  size = 2, 
+                                  color = color_purple,
+                                  size = 2,
                                   alpha = 0.8)
-    
+
     plot.dat7$layer1 <-  geom_text(aes(x = comparison_study_percentile$mean_response[[7]]+0.1,
                                        y = comparison_study_percentile$max_point_y[[7]]+0.12,
-                                       label = paste0("Ihr Ergebnis: ", 
+                                       label = paste0("Ihr Ergebnis: ",
                                                       round(comparison_study_percentile$mean_response[[7]], 2))),
-                                   size = 6, 
-                                   color = color_purple) 
+                                   size = 6,
+                                   color = color_purple)
     plot.dat7$layer2 <-  annotate("segment", x = comparison_study_percentile$mean_response[[7]],
                                   xend = comparison_study_percentile$mean_response[[7]],
                                   y = 0,
                                   yend = comparison_study_percentile$max_point_y[[7]]+0.08,
-                                  color = color_purple, 
-                                  size = 2, 
+                                  color = color_purple,
+                                  size = 2,
                                   alpha = 0.8)
-  
-    
-              
-            })
+    }
+
+            }, ignoreInit = T)
 
   
 }
