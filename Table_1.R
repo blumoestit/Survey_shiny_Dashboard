@@ -15,6 +15,11 @@ library(dplyr)
   color_black <- "#222D32"
   
 #### ANSWER BUTTON ####
+ 
+
+  
+  
+   
   choices <- c("starke Ablehnung" = 1,
                "Ablehnung" = 2,
                "neutral" = 3,
@@ -28,7 +33,8 @@ library(dplyr)
        buttons[[i*2-1]] <- radioGroupButtons(inputId = paste0("q",Q_100[i, 1]), 
                                    label = Q_100[i,2],
                                    choices = choices,
-                                   individual = TRUE,
+                                   individual = TRUE, 
+                                   status = "info",
                                    selected = character())
        buttons[[i*2]] <- br()
       
