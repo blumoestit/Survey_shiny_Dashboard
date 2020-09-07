@@ -7,6 +7,12 @@ library(dplyr)
   Q_100 <- read.csv("Questionnaire.csv")
   Q_100$questions <- as.character(Q_100$questions)
 
+  color_lightgreen <- "#399FBA"   #"#B6E5CF"
+  color_darkgreen <- "#1E5877"
+  color_purple <- "#A10944"
+  color_lightgrey <- "#ECF0F5"
+  color_darkgrey <- "#8499B5"
+  color_black <- "#222D32"
   
 #### ANSWER BUTTON ####
   choices <- c("starke Ablehnung" = 1,
@@ -35,7 +41,7 @@ library(dplyr)
 
 ## weiter
   style_weiter <- "color: white; 
-                   background-color: #01A75A; 
+                   background-color: #399FBA; 
                    position: relative; 
                    left: 1%;
                    height: 33px;
@@ -46,10 +52,10 @@ library(dplyr)
                    border-width: 1px"
 ## zurück
   style_zuruck <- "color: white; 
-                   background-color: #222D32"
+                   background-color: #0B2648"
 ## zu den Ergebnissen
   style_Erg <- "color: white; 
-                   background-color: #A7004E; 
+                   background-color: #A10944; 
                    position: relative; 
                    left: 1%;
                    height: 33px;
@@ -60,15 +66,15 @@ library(dplyr)
                    border-width: 1px"
 
 ## used in tabBox
-  tab_style_color <- tags$style(".nav-tabs {background: #f4f4f4;}
-                  .nav-tabs-custom .nav-tabs li.active:hover a, 
-                  .nav-tabs-custom .nav-tabs li.active a {background-color: #fff;
-                                                          border-color: #fff;
-                                                        }
-                  .nav-tabs-custom .nav-tabs li.active {border-top-color: 
-                                                        #A7004E;
-                                                        }"
-  )
+  tab_style_color <- tags$style(".nav-tabs {background: #ECF0F5;}
+                                .nav-tabs-custom .nav-tabs li.active:hover a, 
+                                .nav-tabs-custom .nav-tabs li.active a {background-color: #fff;
+                                                                        border-color: #ECF0F5;
+                                                                      }
+                                .nav-tabs-custom .nav-tabs li.active {border-top-color: 
+                                                                      #399FBA;
+                                                                }"
+                    )
 
 
   
@@ -92,12 +98,6 @@ library(dplyr)
 
   
 #### GGPLOT THEME ####
-color_lightgreen <- "#B6E5CF"
-color_darkgreen <- "#01A75A"
-color_purple <- "#A7004E"
-color_lightgrey <- "#ECF0F5"
-color_darkgrey <- "#8499B5"
-color_black <- "#222D32"
   
 theme_survey <- function(base_size = 11,
                             base_family = "Source Sans Pro",

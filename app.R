@@ -35,7 +35,7 @@ header <- dashboardHeader(title = "Persönlichkeitstest"#,
 
 
 #### sidebar ####
-sidebar <- dashboardSidebar(
+sidebar <- dashboardSidebar(#width = 300,
     sidebarMenu(id = "tabs", 
         menuItem(text = "Home",
                  tabName = "HomeTab",
@@ -43,44 +43,9 @@ sidebar <- dashboardSidebar(
         ),
         menuItem(text = "Der Test", 
                  tabName = "DerTestTab",
-                 icon = icon('check-square')),
-        # menuItem(text = "Test",
-        #          tabName = "TestTab",
-        #          icon = icon('check-square'),
-        #          # menuSubItem(text = "Fragen 1-10",
-        #          #             tabName = "q1-10"
-        #          # ),
-        #          # menuSubItem(text = "Fragen 11-20",
-        #          #             tabName = "q11-20"
-        #          # ),
-        #          menuSubItem(text = "Fragen 21-30",
-        #                      tabName = "q21-30"
-        #          ),
-        #          menuSubItem(text = "Fragen 31-40",
-        #                      tabName = "q31-40"
-        #          ),
-        #          menuSubItem(text = "Fragen 41-50",
-        #                      tabName = "q41-50"
-        #          ),
-        #          menuSubItem(text = "Fragen 51-60",
-        #                        tabName = "q51-60"
-        #          ),
-        #          menuSubItem(text = "Fragen 61-70",
-        #                      tabName = "q61-70"
-        #          ),
-        #          menuSubItem(text = "Fragen 71-80",
-        #                      tabName = "q71-80"
-        #          ),
-        #          menuSubItem(text = "Fragen 81-90",
-        #                      tabName = "q81-90"
-        #          ),
-        #          menuSubItem(text = "Fragen 91-100",
-        #                      tabName = "q91-100"
-        #          ),
-        #          menuSubItem(text = "Für Statistik",
-        #                      tabName = "demographic"
-        #          )
-        # ),
+                 icon = icon('check-square')
+        ),
+        
         menuItem(text = "Ergebnisse",
                  tabName = "ErgTab",
                  icon = icon('poll')
@@ -95,7 +60,17 @@ sidebar <- dashboardSidebar(
 
 
 #### body ####
-body <- dashboardBody(useShinyalert(),
+body <- dashboardBody(useShinyalert(), 
+                      shinyDashboardThemes(theme = "blue_gradient"),
+                      tags$head(tags$style(HTML('
+                                
+
+                                /* body */
+                                .content-wrapper, .right-side {
+                                background-color: #ECF0F5;
+                                }
+
+                                '))),
   # tags$head(
   #   tags$style(
   #     "body{
@@ -115,17 +90,17 @@ body <- dashboardBody(useShinyalert(),
               fluidRow(
                 column(width = 2),
                 column(width = 8,
-                box(width = NULL,
-              h1("Persönlichkeitstest"), 
-              h3(text1_t),
-              p(text1), 
-              hr(),
-              actionButton(inputId = "startTest",
-                           label = "Test starten",
-                           style = style_Erg
-                           )
+                  box(width = NULL,
+                    h1("Persönlichkeitstest"), 
+                    h3(text1_t),
+                    p(text1), 
+                    hr(),
+                    actionButton(inputId = "startTest",
+                                 label = "Test starten",
+                                 style = style_Erg
                     )
                   )
+                )
               )
           ),
           
@@ -135,7 +110,7 @@ body <- dashboardBody(useShinyalert(),
                     column(width = 1),
                     column(width = 11,      
                   h2("Füllen Sie bitte den Fragebogen aus"),
-                  hr(),
+                  #hr(),
                       )
                   ),
                   fixedRow(
@@ -146,93 +121,97 @@ body <- dashboardBody(useShinyalert(),
                     tabBox(width = 11, id = "tabBoxTest",
                         tabPanel(value = "q1-10",
                           title = "Fragen 1-10",
-                          h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                          hr(),buttons[1:20],#Survey Questins sourced from Table_1.R
+                          h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                          #hr(),
+                          buttons[1:20],#Survey Questins sourced from Table_1.R
                           actionButton('jumpToP2', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q11-20",
-                         title = "Fragen 11-20",
-                         h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                         hr(),
-                         buttons[21:40],
-                         actionButton('jumpbackToP1', 'zurück', style = style_zuruck),
-                         actionButton('jumpToP3', 'weiter', style = style_weiter)
+                               title = "Fragen 11-20",
+                               h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                               #hr(),
+                               buttons[21:40],
+                               actionButton('jumpbackToP1', 'zurück', style = style_zuruck),
+                               actionButton('jumpToP3', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q21-30",
                                 title = "Fragen 21-30",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[41:60],
                                 actionButton('jumpbackToP2', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP4', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q31-40",
                                 title = "Fragen 31-40",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[61:80],
                                 actionButton('jumpbackToP3', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP5', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q41-50",
                                 title = "Fragen 41-50",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[81:100],
                                 actionButton('jumpbackToP4', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP6', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q51-60",
                                 title = "Fragen 51-60",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[101:120],
                                 actionButton('jumpbackToP5', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP7', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q61-70",
                                 title = "Fragen 61-70",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[121:140],
                                 actionButton('jumpbackToP6', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP8', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q71-80",
                                 title = "Fragen 71-80",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[141:160],
                                 actionButton('jumpbackToP7', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP9', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q81-90",
                                 title = "Fragen 81-90",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[161:180],
                                 actionButton('jumpbackToP8', 'zurück', style = style_zuruck),
                                 actionButton('jumpToP10', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "q91-100",
                                 title = "Fragen 91-100",
-                                h2("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
-                                hr(),
+                                h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
+                                #hr(),
                                 buttons[181:200],
                                 actionButton('jumpbackToP9', 'zurück', style = style_zuruck),
                                 actionButton('jumpToDemographic', 'weiter', style = style_weiter)
                        ),
                        tabPanel(value = "demographic",
                                 title = "Für Statistik",
-                                h2("Fragen für statistische Zwecke"),
-                                hr(),
+                                h3("Fragen für statistische Zwecke"),
+                                #hr(),
                                 prettyRadioButtons(inputId = "q_first",
                                                    label = "Haben Sie diesen Fragebogen hier
                                                     auf der Seite schon jemals zuvor ausgefüllt?",
                                                    choices = c("Nein, das ist mein erster Test" = "nein",
                                                                "Ja, schon wenigstens ein mal gemacht" = "ja"),
                                                    width = '150%',
-                                                   status = "success",
+                                                   icon = icon("check"), 
+                                                   bigger = TRUE,
+                                                   status = "info",
+                                                   animation = "jelly",
                                                    selected = character()
                                 ),
                                 hr(),
@@ -242,7 +221,10 @@ body <- dashboardBody(useShinyalert(),
                                                                "männlich",
                                                                "anders",
                                                                "keine Angabe"),
-                                                   status = "success",
+                                                   icon = icon("check"), 
+                                                   bigger = TRUE,
+                                                   status = "info",
+                                                   animation = "jelly",
                                                    selected = character()),
                                 hr(),
                                 selectInput(inputId = "q_age", # pickerInput from shinyWidgets
@@ -256,12 +238,6 @@ body <- dashboardBody(useShinyalert(),
                                 selectInput(inputId = "q_education",
                                             label = "Ihr höchster erreichter Bildungsabschluss",
                                             choices = c(#" ",
-                                                        "Ohne allgemeinen Schulabschluss",
-                                                        "noch in schulischer Ausbildung",
-                                                        "Haupt-(Volks-)schulabschluss",
-                                                        "Abschluss der polytechnischen Oberschule",
-                                                        "Realschul- oder gleichwertiger Abschluss",
-                                                        "Fachhohschul- oder Hochschulreife",
                                                         "Berufsausbildungsvorbereitung" = "DQR1",
                                                         "Hauptschule / Berufsfachschule" = "DQR2",
                                                         "Realschule / Mittlere Reife (MSA) / Duale Berufsausbildung (2 Jahre)" = "DQR3",
@@ -603,7 +579,7 @@ body <- dashboardBody(useShinyalert(),
 
 #### Define UI for application that draws a histogram ####
   ui <- dashboardPage(header, sidebar, body,
-                      skin = "green",
+                      #skin = "green",
                       title = "Der HEXACO-PI-R Persönlichkeitstest")
 
 
@@ -757,11 +733,7 @@ server <- function(input, output, session) {
     
 #### observeEvent radio buttons q1 to q100 ####
   observeEvent(input$jumpToPErg, {
-    
-    ema <- reactive({
-      if (input$email == "")
-        paste0("keine Angabe")
-    })
+  
     
     df_answers_long <- tibble()
     questions <- c()
@@ -769,16 +741,46 @@ server <- function(input, output, session) {
     
     n <- 100
 
-      for(i in 1:n) { 
-        questions[[i]] <- c(paste0("qn",Q_100[i, 1]))
-        current_input <- input[[paste0("q", Q_100[i, 1])]]
-        answers[[i]] <- if (is.null(current_input)) { NA } else { current_input}
-        df_answers_long <- tibble(questions, answers)
-      }
+    for(i in 1:n) { 
+      questions[[i]] <- paste0("qn",Q_100[i, 1])
+      current_input <- input[[paste0("q", Q_100[i, 1])]]
+      answers[[i]] <- if (is.null(current_input)) { NA } else { current_input }
+      df_answers_long <- tibble(questions, answers)
+    }
+
+    first <- if (is.null(input$q_first)) { NA } else { input$q_first }
+    sex <- if (is.null(input$q_sex)) { NA } else { input$q_sex }
+    age <- if (is.null(input$q_age)) { NA } else { input$q_age }
+    education <- if (is.null(input$q_education)) { NA } else { input$q_education }
+    ema <- if (input$email == "") {paste0("keine Angabe")} else { input$email }
+
+    stats <- data.frame(first, sex, age, education, ema)
     
-    if (any(is.na(df_answers_long$answers))) {
-      shinyalert(title = "Noch nicht alle Fragen beantwortet! Gehen Sie bitte zurück zu Frage(n): ",
-                 text = which(is.na(df_answers_long$answers)),
+    df_answers_wide <- df_answers_long %>%
+      spread(key = questions, value = answers) %>%
+      add_column(first = first,
+                 sex = sex,
+                 age = age,
+                 education = education,
+                 email = ema,
+                 timestamp = Sys.time())
+  
+
+    questions_error <- NULL
+    stats_error <- NULL
+    if (any(is.na(df_answers_wide))) {
+      if (any(is.na(stats))) {
+        stats_error <- paste("Bitte beantworten Sie alle Statistikfragen.")
+      }
+      if (any(is.na(df_answers_long$answers))) {
+        questions_error <- paste("Gehen Sie bitte zurück zu Frage(n): ", 
+                                 paste0(which(is.na(df_answers_long$answers)), collapse = ", "))
+      }
+    }
+    
+    if (!is.null(questions_error) | !is.null(stats_error)) {
+      shinyalert(title = "Noch nicht alle Fragen beantwortet!",
+                 text = paste(questions_error, stats_error, sep = "\n"),
                  type = "warning",
                  showCancelButton = TRUE,
                  showConfirmButton = TRUE,
@@ -788,21 +790,19 @@ server <- function(input, output, session) {
 
 
 
-    
-    
-      # Responds data - create a means for facets
+
+
       
-    if (any(is.na(df_answers_long))){
-      shinyalert("Button Pushed", "Proceed?", type = "success",showCancelButton = TRUE, showConfirmButton = TRUE)
-    } else {
-
-      df_answers_wide <- df_answers_long %>%
-           spread(key = questions, value = answers) %>%
-           add_column(first = input$q_first, sex = input$q_sex,
-                      age = input$q_age, education = input$q_education,
-                      email = ema(),
-                      timestamp = Sys.time())
-
+      # if (any(is.na(df_answers_wide))) {
+      #   shinyalert(title = "Noch nicht alle Fragen beantwortet! Gehen Sie bitte zurück zu Frage(n)",
+      #              text = "Für Statistik",
+      #              type = "warning",
+      #              showCancelButton = TRUE,
+      #              showConfirmButton = TRUE,
+      #              confirmButtonCol = color_darkgreen,
+      #              callbackR = function(){ updateTabsetPanel(session, "tabs", "DerTestTab") })
+      # } 
+        
 
          answers_long_responds <- df_answers_long %>%
                                   left_join(Q_100 , by = "questions") %>%
@@ -823,7 +823,7 @@ server <- function(input, output, session) {
 
 
 
-   answers_long <-reactive(df_answers_long)
+    answers_long <-reactive(df_answers_long)
 
     answers_wide <-reactive(df_answers_wide)
     demographics <- reactive(tibble(first_participation = input$q_first,
@@ -850,10 +850,6 @@ server <- function(input, output, session) {
                                                              "Altruism"))
 
 
-
-
-
-
   # Save to a google spreadsheet - use the wide table because the sheet_append()
   # from package googlesheets4 add a new row at the bottom of the dataset in Google Sheets.
      #sheet_append(ss, answers_wide(), sheet = "trials")
@@ -862,7 +858,7 @@ server <- function(input, output, session) {
 
     output$answers_table <- renderTable(answers_long_re_DT)
   output$answers_table <- renderTable(answers_long())
-     }
+     
     # output$testtext <- renderText(input$q_first)
 
 
@@ -978,8 +974,8 @@ server <- function(input, output, session) {
                                   size = 2,
                                   alpha = 0.8)
     }
-
-            }, ignoreInit = T)
+            }, 
+  ignoreInit = T)
 
   
 }
