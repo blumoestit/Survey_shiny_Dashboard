@@ -1,6 +1,7 @@
 
 library(shiny)
 library(shinydashboard)
+library(dashboardthemes)
 library(shinyWidgets)
 library(DT)
 library(tidyr)
@@ -8,6 +9,7 @@ library(dplyr)
 library(tibble)
 library(googlesheets4)
 library(shinyalert)
+library(shinylogs)
 
 #### source ####
 source('Text_1.R')
@@ -53,6 +55,10 @@ sidebar <- dashboardSidebar(#width = 300,
         menuItem(text = "Beschreibung",
                  tabName = "BeschTab",
                  icon = icon('poll-h')
+        ),
+        menuItem(text = "Datenschutz",
+                 tabName = "DatenTab",
+                 icon = icon('umbrella')
         )
     )
 )
@@ -86,7 +92,7 @@ body <- dashboardBody(useShinyalert(),
   #### HOME #####
           tabItem(
               tabName = "HomeTab",
-              h1("Hier kommen Informationen über die Studie und den Persönlichkeitstest"),
+              #h1("Hier kommen Informationen über die Studie und den Persönlichkeitstest"),
               fluidRow(
                 column(width = 2),
                 column(width = 8,
@@ -97,32 +103,32 @@ body <- dashboardBody(useShinyalert(),
                     hr(),
                     actionButton(inputId = "startTest",
                                  label = "Test starten",
-                                 style = style_Erg
+                                 style = style_start
                     )
                   )
                 )
               )
           ),
           
-  #### DER TEST ####  #A10944 purple  #399FBA blue
+  #### DER TEST ####  
           tabItem(tabName = "DerTestTab", 
                   tags$style(HTML("
-.btn {
-color: #222D32;
-border-color: #CAD3DF;
-background-color: #ECF0F5;
-}
-.btn:hover {
-color: #fff;
-background-color: #75BFD2;
-}
-")),
-                  
+                      .btn {
+                      color: #222D32;
+                      border-color: #D3EAE4;
+                      background-color: #ECF0F5;
+                      }
+                      .btn:hover {
+                      color: #fff;
+                      border-color: #96AFB8;
+                      background-color: #75BFD2;
+                      }
+                      ")),
                   
                   fixedRow(
                     column(width = 1),
                     column(width = 11,      
-                  h2("Füllen Sie bitte den Fragebogen aus"),
+                  #h2("Füllen Sie bitte den Fragebogen aus"),
                   #hr(),
                       )
                   ),
@@ -131,7 +137,7 @@ background-color: #75BFD2;
                     #tabItem(tabName = "null", column(width = 1)),
                     column(width = 1),
                     column(width = 11,
-                    tabBox(width = 11, id = "tabBoxTest",
+                    tabBox(width = 11, id = "tabBoxTest", 
                         tabPanel(value = "q1-10",
                           title = "Fragen 1-10",
                           h3("Inwieweit treffen die folgenden Aussagen auf Sie zu?"),
@@ -282,28 +288,30 @@ background-color: #75BFD2;
   #### ERGEBNISSE ####
           tabItem(
               tabName = "ErgTab",
-              h2("Ihre Ergebnisse"),
+              #h2("Ihre Ergebnisse"),
               fixedRow(
                 column(width = 1),
                 column(width = 10,
                        box(
                          width = 12,
-                         status = "primary",
+                         status = "info",
                          h2(text1_t),
+                         hr(),
                          text1,
                          tableOutput(outputId = "answers_table"),
                           #textOutput(outputId = "testtext")
                        ),
                        box(
                          width = 12,
-                         status = "primary",
-                         h2("Zusammenfassung des Persönlichkeitsprofils"),
+                         status = "info",
+                         h3("Zusammenfassung des Persönlichkeitsprofils"),
+                         hr(),
                          plotOutput(outputId = "box_ggplot")
                        ),
                        box(
                          width = 12,#style = "background-color: #ECF0F5;",
-                         status = "primary",
-                         h2("Persönlichkeitsmerkmale"),
+                         status = "info",
+                         h3("Persönlichkeitsmerkmale"),
                          hr(),
                          column(width = 3, #style = "background-color: #01A75A;",
                               h4(strong("Ehrlichkeit - Demut"))#,
@@ -382,7 +390,6 @@ background-color: #75BFD2;
                          text1,
                          hr()
                        )
-                       
                 )
               )
           ),
@@ -404,12 +411,29 @@ background-color: #75BFD2;
               h3(text7_t),
               p(text7)
               
-          )
+          ),
+            tabItem(
+              tabName = "DatenTab",
+              fluidRow(
+                column(width = 2),
+                column(width = 8,
+                       box(width = NULL,
+                           h1("Datenschutz"), 
+                           h3(text1_t),
+                           p(text1), 
+                           hr()
+                           )
+                       )
+                )
+              )
+
+  
       )
       
   )
   
   
+
 
 #### Define UI for application that draws a histogram ####
   ui <- dashboardPage(header, sidebar, body,
@@ -421,13 +445,17 @@ background-color: #75BFD2;
 
 
 
+
 #### Define server ####
 server <- function(input, output, session) {
+  timestamp1 <<- Sys.time()
 
 #### Action buttons "weiter" and "zurück" ####
     ## home to test
     observeEvent(input$startTest, {
       updateTabsetPanel(session, "tabs", "DerTestTab")
+     # timestamp1 <<- Sys.time()
+      #print(timestamp1)
     })
     ## page 1
     observeEvent(input$jumpToP2, {
@@ -507,14 +535,19 @@ server <- function(input, output, session) {
   
     
     
-#### Create data table from the radioButtons answers ####
+    
+#### Create chart layers without results and from the radioButtons answers ####
   
     # Save plot in reactive BOX PLOT
     plot.dat <- reactiveValues(main=NULL, layer1=NULL)
     plot.dat$main <- box_plot
     
     observe({
+      style <- isolate(input$style)
+      withProgress(message = "Boxplot wird gemacht...", style = style, value = 0.1, {
+        Sys.sleep(0.25)
       output$box_ggplot <- renderPlot({ plot.dat$main + plot.dat$layer1 })
+      })
     })
 
     # Save plot in reactive DNORM PLOT
@@ -563,18 +596,16 @@ server <- function(input, output, session) {
     
     
     
-    
-    
 #### observeEvent radio buttons q1 to q100 ####
   observeEvent(input$jumpToPErg, {
-  
+    
+    withProgress(message = "Warten auf Ihre Ergebnisse...", value = 3, {
     
     df_answers_long <- tibble()
     questions <- c()
     answers <- c()
     
     n <- 100
-    print("12asdfasdfs3")
     
       for(i in 1:n) { 
         questions[[i]] <- paste0("qn",Q_100[i, 1])
@@ -591,7 +622,6 @@ server <- function(input, output, session) {
 
     stats <- data.frame(first, sex, age, education, ema)
     
-    print(dim(df_answers_long))
     df_answers_wide <- df_answers_long %>%
       spread(key = questions, value = answers) %>%
       add_column(first = first,
@@ -599,7 +629,8 @@ server <- function(input, output, session) {
                  age = age,
                  education = education,
                  email = ema,
-                 timestamp = Sys.time())
+                 timestamp_1 = timestamp1,
+                 timestamp_2 = Sys.time())
   
 
     questions_error <- NULL
@@ -618,9 +649,9 @@ server <- function(input, output, session) {
       shinyalert(title = "Noch nicht alle Fragen beantwortet!",
                  text = paste(questions_error, stats_error, sep = "\n"),
                  type = "warning",
-                 showCancelButton = TRUE,
+                 showCancelButton = FALSE,
                  showConfirmButton = TRUE,
-                 confirmButtonCol = color_darkgreen,
+                 confirmButtonCol = "#96AFB8",
                  callbackR = function(){ updateTabsetPanel(session, "tabs", "DerTestTab") })
     } else {
 
@@ -688,19 +719,26 @@ server <- function(input, output, session) {
 
   # Save to a google spreadsheet - use the wide table because the sheet_append()
   # from package googlesheets4 add a new row at the bottom of the dataset in Google Sheets.
-     #sheet_append(ss, answers_wide(), sheet = "trials")
+     sheet_append(ss, answers_wide(), sheet = "trials")
 
   # Show as table in Results tab
 
-    output$answers_table <- renderTable(answers_long_re_DT)
-  output$answers_table <- renderTable(answers_long())
+    output$answers_table <- renderTable({
+      style <- isolate(input$style)
+      withProgress(message = "Tabelle wird gemacht", style = style, value = 0.1, {
+        Sys.sleep(0.25)
+      answers_long_re_DT
+      })
+    })
+    #output$answers_table <- renderTable(answers_long())
      
     # output$testtext <- renderText(input$q_first)
 
 
   # Show the updated box_plot with responder results (points)
   #
-  #
+  
+    
      #output$box_ggplot <- box_plot_respond
     boxplot_respond <- geom_point(aes(x = comparison_study_percentile$mean_response, # the responder's mean value
                                 y = 0.15),
@@ -809,11 +847,18 @@ server <- function(input, output, session) {
                                   color = color_purple,
                                   size = 2,
                                   alpha = 0.8)
+    
+   
     }
-            }, 
-  ignoreInit = T)
-
-  
+    }) # end of progress bar function
+    
+     }, 
+  ignoreInit = T)   # end of oserver go to Erg
+        
+        
+      
+    
+    
 }
 
 

@@ -5,8 +5,8 @@ account: blumoestit
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2718780
-bundleId: 3603040
+bundleId: 3607077
 url: https://blumoestit.shinyapps.io/Personality_Survey_demo-1/
-when: 1599497685.82038
+when: 1599582543.77998
 asMultiple: FALSE
 asStatic: FALSE

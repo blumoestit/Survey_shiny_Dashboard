@@ -7,9 +7,9 @@ library(dplyr)
   Q_100 <- read.csv("Questionnaire.csv")
   Q_100$questions <- as.character(Q_100$questions)
 
-  color_lightgreen <- "#399FBA"   #"#B6E5CF"
-  color_darkgreen <- "#1E5877"
-  color_purple <- "#A10944"
+  color_lightgreen <- "#75BDD2"   #"#B6E5CF"
+  color_darkgreen <- "#007E99"
+  color_purple <- "#9C3B68"    #"#91518D"
   color_lightgrey <- "#ECF0F5"
   color_darkgrey <- "#8499B5"
   color_black <- "#222D32"
@@ -47,28 +47,49 @@ library(dplyr)
 
 ## weiter
   style_weiter <- "color: white; 
-                   background-color: #399FBA; 
+                   font-size: 18px;
+                   background-color: #4DBF85; 
                    position: relative; 
-                   left: 1%;
-                   height: 33px;
-                   width: 65px;
+                   left: 0%;
+                   height: 42px;
+                   width: 75px;
                    text-align:center;
-                   text-indent: -2px;
-                   border-radius: 1px;
+                   text-indent: -1px;
+                   border-radius: 4px;
                    border-width: 1px"
 ## zurück
   style_zuruck <- "color: white; 
-                   background-color: #0B2648"
-## zu den Ergebnissen
-  style_Erg <- "color: white; 
-                   background-color: #A10944; 
+                   font-size: 18px;
+                   height: 42px;
+                   width: 75px;
+                   border-width: 1px;
+                   background-color: #96AFB8"
+  ## Test starten
+  style_start <- "color: white; 
+                   font-size: 18px;
+                   background-color: #009DE0; 
+                   border-color: #EDFCFF; 
                    position: relative; 
-                   left: 1%;
-                   height: 33px;
-                   width: 150px;
+                   left: 35%;
+                   height: 42px;
+                   width: 180px;
                    text-align:center;
                    text-indent: -2px;
-                   border-radius: 1px;
+                   box-shadow: 1px 2px #B4C5CC;
+                   border-radius: 6px;
+                   border-width: 1px"  
+  
+## zu den Ergebnissen
+  style_Erg <- "color: white; 
+                    font-size: 18px;
+                   background-color: #009DE0; 
+                   position: relative; 
+                   left: 0%;
+                   height: 42px;
+                   width: 180px;
+                   text-align:center;
+                   text-indent: -2px;
+                   border-radius: 6px;
                    border-width: 1px"
 
 ## used in tabBox
@@ -77,8 +98,8 @@ library(dplyr)
                                 .nav-tabs-custom .nav-tabs li.active a {background-color: #fff;
                                                                         border-color: #ECF0F5;
                                                                       }
-                                .nav-tabs-custom .nav-tabs li.active {border-top-color: 
-                                                                      #399FBA;
+                                .nav-tabs-custom .nav-tabs li.active {border-top-color: #399FBA;
+                                                                      border-color: #399FBA;
                                                                 }"
                     )
 
@@ -87,22 +108,37 @@ library(dplyr)
 #### Data frame to goole sheets #####
 ## save the respods to google spreadsheet
   
-  # Authorisation
+  # # Authorisation
   # gs4_auth() #blumoestit@gmail.com
+  # 
+  # # Write a new spreadsheet if does not exist
+  # if (exists("ss")) {
+  #       ss
+  #   } else {
+  # 
+  #     col <- c()
+  #     for (i in 1:100) {
+  #       col[i] <- paste0("qn", i)
+  #     }
+  # 
+  #     col1 <- data.frame(col, row1 = seq(1,1,1)) %>%
+  #       spread(col, row1) %>%
+  #       add_column(first = "test",
+  #                  sex = "test",
+  #                  age = "test",
+  #                  education = "test",
+  #                  email = "ema",
+  #                  timestamp_1 = Sys.time(),
+  #                  timestamp_2 = Sys.time())
+  # 
+  #    ss <- gs4_create(
+  #      "ShinyApp_Personality_Survey_responds",
+  #         sheets = list(trials = col1))
+  # 
+  #    }
 
-  # Write a new spreadsheet
-# if (exists("ss")) {
-#       ss
-#   } else {
-#    ss <- gs4_create(
-#      "ShinyApp_Personality_Survey_responds",
-#         sheets = list(trials = data.frame(qn1 = 1, qn2 = 2,	qn3 = 3, qn4 = 4, qn5 = 5, SysTime = Sys.time(),
-#                                           first_participation = "test", sex = "test",
-#                                           age = "test", education = "test", email = "test")))
-#   }
 
 
-  
 #### GGPLOT THEME ####
   
 theme_survey <- function(base_size = 11,
@@ -178,8 +214,8 @@ theme_survey <- function(base_size = 11,
                                  yend = 0.3), 
                              linetype = "solid",
                              color = color_darkgreen, 
-                             size = 2, 
-                             alpha = 0.7) +
+                             size = 1.5, 
+                             alpha = 0.9) +
                 # geom_point(aes(x = xintercept, # the responder's mean value
                 #                y = 0.15), 
                 #            color = color_purple, 
