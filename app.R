@@ -1,6 +1,7 @@
 
 library(shiny)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(dashboardthemes)
 library(shinyWidgets)
 library(DT)
@@ -306,6 +307,11 @@ body <- dashboardBody(useShinyalert(),
                          status = "info",
                          h3("Zusammenfassung des Persönlichkeitsprofils"),
                          hr(),
+                         img(src="Legend1.png", height = 35, width = 110),
+                         img(src="Legend2.png", height = 35, width = 170),
+                         img(src="Legend3.png", height = 35, width = 350),
+                         # HTML('<center><img src ="Legend2.png", height = 35, width = 200></center>'),
+                         # HTML('<center><img src ="Legend3.png", height = 35, width = 350></center>'),
                          plotOutput(outputId = "box_ggplot")
                        ),
                        box(
