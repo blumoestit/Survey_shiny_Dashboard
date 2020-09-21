@@ -44,13 +44,20 @@ sidebar <- dashboardSidebar(#width = 300,
                  tabName = "HomeTab",
                  icon = icon('home')
         ),
-        menuItem(text = "Der Test", 
+        menuItem(text = "Persönlichkeitstest", 
                  tabName = "DerTestTab",
                  icon = icon('check-square')
         ),
-        
-        menuItem(text = "Ergebnisse",
+        menuItem(text = "Ergebnisse Persönlichkeitstest",
                  tabName = "ErgTab",
+                 icon = icon('poll')
+        ),
+        menuItem(text = "FinaMetrica Test",
+                 tabName = "FinTab",
+                 icon = icon('piggy-bank')
+        ),
+        menuItem(text = "Ergebnisse FinaMetrica",
+                 tabName = "ErgFinTab",
                  icon = icon('poll')
         ),
         menuItem(text = "Beschreibung",
@@ -399,6 +406,118 @@ body <- dashboardBody(useShinyalert(),
                 )
               )
           ),
+  
+  #### FINA METRICA ####  
+  tabItem(tabName = "FinTab", 
+          tags$style(HTML("
+                      .btn {
+                      color: #222D32;
+                      border-color: #D3EAE4;
+                      background-color: #ECF0F5;
+                      }
+                      .btn:hover {
+                      color: #fff;
+                      border-color: #96AFB8;
+                      background-color: #75BFD2;
+                      }
+                      ")),
+          
+          fixedRow(
+            column(width = 1),
+            column(width = 11,      
+                   #h2("Füllen Sie bitte den Fragebogen aus"),
+                   #hr(),
+            )
+          ),
+          fixedRow(
+            tab_style_color, # defined in 'Table_1.R'
+            #tabItem(tabName = "null", column(width = 1)),
+            column(width = 1),
+            column(width = 11,
+                   tabBox(width = 11, id = "tabBoxFin", 
+                          tabPanel(value = "fq1-5",
+                                   title = "Fragen 1-5",
+                                   strong(finMet_1),
+                                   br(),br(),
+                                   buttons_fq[1:5],
+                                   hr(),
+                                   actionButton('jumpToFN2', 'weiter', style = style_weiter)
+                          ),
+                          tabPanel(value = "fq6-10",
+                                   title = "Fragen 6-10",
+                                   strong(finMet_1),
+                                   br(),br(),
+                                   buttons_fq[6:10],
+                                   hr(),
+                                   actionButton('jumpbackToFN1', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFN3', 'weiter', style = style_weiter)
+                          ),
+                          tabPanel(value = "fq11-15",
+                                   title = "Fragen 11-15",
+                                   strong(finMet_1),
+                                   br(),br(),
+                                   buttons_fq[11:15],
+                                   hr(),
+                                   actionButton('jumpbackToFN2', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFN4', 'weiter', style = style_weiter)
+                          ),
+                          tabPanel(value = "fq16-20",
+                                   title = "Fragen 16-20",
+                                   strong(finMet_1),
+                                   br(),br(),
+                                   buttons_fq[16:20],
+                                   hr(),
+                                   actionButton('jumpbackToFN3', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFN5', 'weiter', style = style_weiter)
+                          ),
+                          tabPanel(value = "fq21-25",
+                                   title = "Fragen 21-25",
+                                   strong(finMet_1),
+                                   br(),br(),
+                                   buttons_fq[21:24],
+                                     strong(qfm[[25]]),
+                                     br(strong("Wie hoch, denken Sie, wird Ihre Punktzahl sein?")),
+                                     numericInput(inputId = "fq25",
+                                                  label = "",
+                                                  min = 0, max = 100,
+                                                  width = "15%",
+                                                  verbatimTextOutput("value")),
+                                   img(src="Question_25.png", height = 300, width = 500),
+                                   
+                                   hr(),
+                                   actionButton('jumpbackToFN4', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFNdemo', 'weiter', style = style_weiter)
+                          ),
+                          tabPanel(value = "fq-demo",
+                                   title = "Demografische Fragen",
+                                   strong(finMet_2),
+                                   br(),br(),
+                                   buttons_fq[26],
+                                   strong("2. Mein Geburtsjahr ist:"),
+                                     numericInput(inputId = "fqd2",
+                                                  label = "",
+                                                  min = 12, max = 112,
+                                                  width = "10%",
+                                                  verbatimTextOutput("value")),
+                                   buttons_fq[28:31],
+                                   strong("7. Wie viele Familienmitglieder, sich ausgenommen, 
+                                          unterstützen Sie finanziell - teilweise oder voll?"),
+                                     numericInput(inputId = "fqd7",
+                                                  label = " ", #qfm[[32]],
+                                                  min = 0, max = 20,
+                                                  width = "10%",
+                                                  verbatimTextOutput("value")),
+                                   buttons_fq[33],
+                                   hr(),
+                                   actionButton('jumpbackToFN5', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFNErg', 'zu den Ergebnissen', style = style_Erg)
+                          )
+                   )
+                   
+            )
+          )
+  ),
+  
   #### BESCHREIBUNG ####       
           tabItem(
               tabName = "BeschTab",
@@ -439,6 +558,8 @@ body <- dashboardBody(useShinyalert(),
   )
   
   
+
+
 
 
 #### Define UI for application that draws a histogram ####

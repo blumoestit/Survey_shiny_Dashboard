@@ -16,9 +16,6 @@ library(dplyr)
   
 #### ANSWER BUTTON ####
  
-
-  
-  
    
   choices <- c("starke Ablehnung" = 1,
                "Ablehnung" = 2,
@@ -39,8 +36,24 @@ library(dplyr)
        buttons[[i*2]] <- br()
       
   }
-
-
+  
+  
+  
+  buttons_fq <- list()
+  
+  for (j in 1:nrow(Q_FM)) {
+  
+      buttons_fq[[j]] <- prettyRadioButtons(inputId = paste0("fq",Q_FM[j, 1]),
+                                       label = qfm[[j]],
+                                       choices = qfm_choices[[paste0("qfm",j)]],
+                                       width = '150%',
+                                       icon = icon("check"), 
+                                       bigger = FALSE,
+                                       status = "info",
+                                       animation = "jelly",
+                                       selected = character())
+  
+}
   
   
 #### STYLE ACTION BUTTONS ####
