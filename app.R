@@ -40,26 +40,26 @@ header <- dashboardHeader(title = "Persönlichkeitstest"#,
 #### sidebar ####
 sidebar <- dashboardSidebar(#width = 300,
     sidebarMenu(id = "tabs", 
-        menuItem(text = "Home",
+        menuItem(text = "Einleitung",
                  tabName = "HomeTab",
                  icon = icon('home')
         ),
-        menuItem(text = "Persönlichkeitstest", 
+        menuItem(text = "Charakterzüge", 
                  tabName = "DerTestTab",
                  icon = icon('check-square')
         ),
-        menuItem(text = "Ergebnisse Persönlichkeitstest",
-                 tabName = "ErgTab",
-                 icon = icon('poll')
-        ),
-        menuItem(text = "FinaMetrica Test",
+        menuItem(text = "Risikoneigung",
                  tabName = "FinTab",
                  icon = icon('piggy-bank')
         ),
-        menuItem(text = "Ergebnisse FinaMetrica",
-                 tabName = "ErgFinTab",
+        menuItem(text = "Ergebnisse",
+                 tabName = "ErgTab",
                  icon = icon('poll')
         ),
+        # menuItem(text = "Ergebnisse FinaMetrica",
+        #          tabName = "ErgFinTab",
+        #          icon = icon('poll')
+        # ),
         menuItem(text = "Beschreibung",
                  tabName = "BeschTab",
                  icon = icon('poll-h')
@@ -441,7 +441,7 @@ body <- dashboardBody(useShinyalert(),
                                    br(),br(),
                                    buttons_fq[1:5],
                                    hr(),
-                                   actionButton('jumpToFN2', 'weiter', style = style_weiter)
+                                   actionButton('jumpToFM2', 'weiter', style = style_weiter)
                           ),
                           tabPanel(value = "fq6-10",
                                    title = "Fragen 6-10",
@@ -449,8 +449,8 @@ body <- dashboardBody(useShinyalert(),
                                    br(),br(),
                                    buttons_fq[6:10],
                                    hr(),
-                                   actionButton('jumpbackToFN1', 'zurück', style = style_zuruck),
-                                   actionButton('jumpToFN3', 'weiter', style = style_weiter)
+                                   actionButton('jumpbackToFM1', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFM3', 'weiter', style = style_weiter)
                           ),
                           tabPanel(value = "fq11-15",
                                    title = "Fragen 11-15",
@@ -458,8 +458,8 @@ body <- dashboardBody(useShinyalert(),
                                    br(),br(),
                                    buttons_fq[11:15],
                                    hr(),
-                                   actionButton('jumpbackToFN2', 'zurück', style = style_zuruck),
-                                   actionButton('jumpToFN4', 'weiter', style = style_weiter)
+                                   actionButton('jumpbackToFM2', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFM4', 'weiter', style = style_weiter)
                           ),
                           tabPanel(value = "fq16-20",
                                    title = "Fragen 16-20",
@@ -467,8 +467,8 @@ body <- dashboardBody(useShinyalert(),
                                    br(),br(),
                                    buttons_fq[16:20],
                                    hr(),
-                                   actionButton('jumpbackToFN3', 'zurück', style = style_zuruck),
-                                   actionButton('jumpToFN5', 'weiter', style = style_weiter)
+                                   actionButton('jumpbackToFM3', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFM5', 'weiter', style = style_weiter)
                           ),
                           tabPanel(value = "fq21-25",
                                    title = "Fragen 21-25",
@@ -482,11 +482,11 @@ body <- dashboardBody(useShinyalert(),
                                                   min = 0, max = 100,
                                                   width = "15%",
                                                   verbatimTextOutput("value")),
-                                   img(src="Question_25.png", height = 300, width = 500),
+                                   img(src="Chart_question_25.png", height = 250, width = 500),
                                    
                                    hr(),
-                                   actionButton('jumpbackToFN4', 'zurück', style = style_zuruck),
-                                   actionButton('jumpToFNdemo', 'weiter', style = style_weiter)
+                                   actionButton('jumpbackToFM4', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFMdemo', 'weiter', style = style_weiter)
                           ),
                           tabPanel(value = "fq-demo",
                                    title = "Demografische Fragen",
@@ -494,7 +494,7 @@ body <- dashboardBody(useShinyalert(),
                                    br(),br(),
                                    buttons_fq[26],
                                    strong("2. Mein Geburtsjahr ist:"),
-                                     numericInput(inputId = "fqd2",
+                                     numericInput(inputId = "fq27",
                                                   label = "",
                                                   min = 12, max = 112,
                                                   width = "10%",
@@ -502,15 +502,15 @@ body <- dashboardBody(useShinyalert(),
                                    buttons_fq[28:31],
                                    strong("7. Wie viele Familienmitglieder, sich ausgenommen, 
                                           unterstützen Sie finanziell - teilweise oder voll?"),
-                                     numericInput(inputId = "fqd7",
+                                     numericInput(inputId = "fq32",
                                                   label = " ", #qfm[[32]],
                                                   min = 0, max = 20,
                                                   width = "10%",
                                                   verbatimTextOutput("value")),
                                    buttons_fq[33],
                                    hr(),
-                                   actionButton('jumpbackToFN5', 'zurück', style = style_zuruck),
-                                   actionButton('jumpToFNErg', 'zu den Ergebnissen', style = style_Erg)
+                                   actionButton('jumpbackToFM5', 'zurück', style = style_zuruck),
+                                   actionButton('jumpToFMErg', 'zu den Ergebnissen', style = style_Erg)
                           )
                    )
                    
@@ -562,10 +562,10 @@ body <- dashboardBody(useShinyalert(),
 
 
 
-#### Define UI for application that draws a histogram ####
+#### Define UI for application ####
   ui <- dashboardPage(header, sidebar, body,
                       #skin = "green",
-                      title = "Der HEXACO-PI-R Persönlichkeitstest")
+                      title = "Persönlichkeits- und Risikobereitschaftstest")
 
 
 
@@ -584,6 +584,8 @@ server <- function(input, output, session) {
      # timestamp1 <<- Sys.time()
       #print(timestamp1)
     })
+  
+  ### Personality buttons
     ## page 1
     observeEvent(input$jumpToP2, {
       updateTabItems(session, "tabBoxTest", "q11-20")
@@ -659,9 +661,47 @@ server <- function(input, output, session) {
       updateTabItems(session, "tabs", "ErgTab")
   })
   
-  
-    
-    
+    ### FinaMetrica buttons
+    ## page 1
+    observeEvent(input$jumpToFM2, {
+      updateTabItems(session, "tabBoxFin", "fq6-10")
+    })
+ 
+    ## page 2
+    observeEvent(input$jumpToFM3, {
+      updateTabItems(session, "tabBoxFin", "fq11-15")
+    })
+    observeEvent(input$jumpbackToFM1, {
+      updateTabItems(session, "tabBoxFin", "fq1-5")
+    })
+    ## page 3
+    observeEvent(input$jumpToFM4, {
+      updateTabItems(session, "tabBoxFin", "fq16-20")
+    })
+    observeEvent(input$jumpbackToFM2, {
+      updateTabItems(session, "tabBoxFin", "fq6-10")
+    })
+    ## page 4
+    observeEvent(input$jumpToFM5, {
+      updateTabItems(session, "tabBoxFin", "fq21-25")
+    })
+    observeEvent(input$jumpbackToFM3, {
+      updateTabItems(session, "tabBoxFin", "fq11-15")
+    })
+    ## page 5
+    observeEvent(input$jumpToFMdemo, {
+      updateTabItems(session, "tabBoxFin", "fq-demo")
+    })
+    observeEvent(input$jumpbackToFM4, {
+      updateTabItems(session, "tabBoxFin", "fq16-20")
+    })
+    ## page 6
+    observeEvent(input$jumpToFMErg, {
+      updateTabItems(session, "tabs", "ErgTab")
+    })
+    observeEvent(input$jumpbackToFM5, {
+      updateTabItems(session, "tabBoxFin", "fq21-25")
+    })
     
 #### Create chart layers without results and from the radioButtons answers ####
   
@@ -722,12 +762,12 @@ server <- function(input, output, session) {
     
     
     
-    
-#### observeEvent radio buttons q1 to q100 ####
+#### observeEvent radio buttons q1 to q100 and FinaMatrica qn1 to qn33 ####
   observeEvent(input$jumpToPErg, {
     
     withProgress(message = "Warten auf Ihre Ergebnisse...", value = 3, {
     
+    # Add Personality answers
     df_answers_long <- tibble()
     questions <- c()
     answers <- c()
@@ -747,6 +787,7 @@ server <- function(input, output, session) {
     education <- if (is.null(input$q_education)) { NA } else { input$q_education }
     ema <- if (input$email == "") {paste0("keine Angabe")} else { input$email }
 
+    
     stats <- data.frame(first, sex, age, education, ema)
     
     df_answers_wide <- df_answers_long %>%
@@ -862,8 +903,7 @@ server <- function(input, output, session) {
     # output$testtext <- renderText(input$q_first)
 
 
-  # Show the updated box_plot with responder results (points)
-  #
+  #### Show the updated box_plot with responder results (points) ####
   
     
      #output$box_ggplot <- box_plot_respond
@@ -981,9 +1021,36 @@ server <- function(input, output, session) {
     
      }, 
   ignoreInit = T)   # end of oserver go to Erg
-        
-        
+  
+    
+    
+  # Add FinaMetrica answers
+    observeEvent(input$jumpToFMErg, {
       
+      df_answersFM_long <- tibble()
+      questionsFM <- c()
+      answersFM <- c()
+      
+      for (k in 1:3){
+        questionsFM[[k]] <- paste0("fq", k)
+        answersFM[[k]] <- input[[paste0("fq", k)]]
+        df_answersFM_long <- tibble(questionsFM, answersFM)
+     }
+      
+      df_answersFM_wide <- df_answersFM_long %>% 
+        spread(key = questionsFM, value = answersFM)
+      
+      
+      #answersFS_wide <- reactive(df_answersFM_wide) 
+      
+      
+      sheet_append(ss, df_answersFM_wide, sheet = "finametrica")
+      
+    }, 
+    ignoreInit = T
+    ) # end of add FinaMetrica
+        
+    
     
     
 }

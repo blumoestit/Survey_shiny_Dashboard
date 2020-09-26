@@ -128,3 +128,61 @@ box_plot <- ggplot(comparison_study_percentile) +
 #   geom_boxplot() +
 #   coord_flip()
 
+
+
+
+
+data_na <- data.frame(col1 = c(1, 5, NA, 4), col2 = c(NA, 1, 2, 3))
+
+is.na(data_na)
+any(is.na(data_na))
+which(is.na(data_na$col1))
+
+
+if (any(is.na(data_na$col2))) {
+  print("Damn, it's NA")
+  
+}
+library(ggplot2)
+plot(cars)
+p <- ggplot(cars, aes(x = speed, y = dist, color = dist)) + geom_point() 
+p
+text1
+
+#### Plot to include in FinaMetrica Questionnaire ####
+
+library(ggfortify)
+ggdistribution(dnorm, seq(-3, 3, 0.1), mean = 0, sd = 1, fill = "blue") +
+  theme_classic()
+
+# ggplot(data = data.frame(x = c(0, 100)), aes(x)) +
+#   stat_function(fun = dnorm,  args = list(mean = 50, sd = 8), size = 2.5, color = "#01A75A") +
+  
+  
+  ggdistribution(dnorm, seq(0, 100, 0.2), mean = 50, sd = 7.5, fill = "#75BDD2", alpha = 1, colour = "#007E99") +
+  scale_x_continuous(expand = c(0, 0), 
+                     limits = c(0, 100),
+                     breaks = seq(0, 100, by = 10)
+                     ) +
+  scale_y_continuous(expand = c(0, 0, 0, 0.005)) +
+  theme_classic() +
+  theme(axis.line.x = element_line(size = 1.5, color = "#222D32"),
+        axis.line.y = element_line(size = 1.5, color = "#222D32"),
+        axis.text.x = element_text(size = 26, margin = margin(10, 0, 0, 0, "pt"), face = "bold", color = "#222D32"),
+        axis.text.y = element_blank(),
+        axis.title.x = element_text(size = 26, margin = margin(10, 0, 0, 0, "pt"), face = "bold", color = "#222D32"),
+        axis.title.y = element_text(size = 26, margin = margin(10, 0, 0, 0, "pt"), face = "bold", color = "#222D32",  vjust = 1, hjust = 1),
+        axis.ticks.length.x = grid::unit(10, "pt"),
+        axis.ticks.x = element_line(size = 1.5),
+        axis.ticks.y = element_blank(),
+        plot.caption = element_text(size = 32, margin = margin(-30, 0, 0, 10, "pt"), face = "bold", color = "#007E99", vjust = 0),
+        plot.margin = margin(10, 40, 10, 40, "pt"),
+        plot.title = element_text(size = 40, face = "bold.italic", color = "#222D32"),
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white")
+  ) + 
+    xlab("Ergebnis") + 
+    ylab("Häufigkeit") + 
+    labs(caption = "Risikoscheu                                                                                            Risikobereit")
+  
+

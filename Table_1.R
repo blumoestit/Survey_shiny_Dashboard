@@ -6,7 +6,8 @@ library(dplyr)
 #### LOAD QUESTIONNAIRE ####
   Q_100 <- read.csv("Questionnaire.csv")
   Q_100$questions <- as.character(Q_100$questions)
-
+  
+#### COLORS ####
   color_lightgreen <- "#75BDD2"   #"#B6E5CF"
   color_darkgreen <- "#007E99"
   color_purple <- "#9C3B68"    #"#91518D"
