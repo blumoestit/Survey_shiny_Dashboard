@@ -478,10 +478,11 @@ body <- dashboardBody(useShinyalert(),
                                      strong(qfm[[25]]),
                                      br(strong("Wie hoch, denken Sie, wird Ihre Punktzahl sein?")),
                                      numericInput(inputId = "fq25",
-                                                  label = "",
-                                                  min = 0, max = 100,
-                                                  width = "15%",
-                                                  verbatimTextOutput("value")),
+                                                  label = " ",
+                                                  min = 0, max = 100, step = 1, value = " ",
+                                                  width = "10%"#,
+                                                  #verbatimTextOutput("value")
+                                                  ),
                                    img(src="Chart_question_25.png", height = 250, width = 500),
                                    
                                    hr(),
@@ -496,17 +497,15 @@ body <- dashboardBody(useShinyalert(),
                                    strong("2. Mein Geburtsjahr ist:"),
                                      numericInput(inputId = "fq27",
                                                   label = "",
-                                                  min = 12, max = 112,
-                                                  width = "10%",
-                                                  verbatimTextOutput("value")),
+                                                  min = 12, max = 112, step = 1, value = " ",
+                                                  width = "10%"),
                                    buttons_fq[28:31],
                                    strong("7. Wie viele Familienmitglieder, sich ausgenommen, 
                                           unterstützen Sie finanziell - teilweise oder voll?"),
                                      numericInput(inputId = "fq32",
                                                   label = " ", #qfm[[32]],
-                                                  min = 0, max = 20,
-                                                  width = "10%",
-                                                  verbatimTextOutput("value")),
+                                                  min = 1, max = 20, step = 1, value = " ",
+                                                  width = "10%"),
                                    buttons_fq[33],
                                    hr(),
                                    actionButton('jumpbackToFM5', 'zurück', style = style_zuruck),
@@ -775,10 +774,16 @@ server <- function(input, output, session) {
     n <- 100
     
       for(i in 1:n) { 
+        
+        prefix <- "qn"
+        suffix <- 1:n
+        levels_names <- paste(prefix, suffix, sep = "")
+        
         questions[[i]] <- paste0("qn",Q_100[i, 1])
         current_input <- input[[paste0("q", Q_100[i, 1])]]
         answers[[i]] <- if (is.null(current_input)) { NA } else { current_input }
-        df_answers_long <- tibble(questions, answers)
+        df_answers_long <- tibble(questions, answers)%>% 
+                            mutate(questions = factor(questions, levels = levels_names))
       }
 
     first <- if (is.null(input$q_first)) { NA } else { input$q_first }
@@ -1031,18 +1036,24 @@ server <- function(input, output, session) {
       questionsFM <- c()
       answersFM <- c()
       
-      for (k in 1:3){
+      
+      for (k in 1:33){
+        
         questionsFM[[k]] <- paste0("fq", k)
         answersFM[[k]] <- input[[paste0("fq", k)]]
-        df_answersFM_long <- tibble(questionsFM, answersFM)
+        
+        prefix <- "fq"
+        suffix <- 1:33
+        levels_names <- paste(prefix, suffix, sep = "")
+        
+        df_answersFM_long <- tibble(questionsFM, answersFM) %>% 
+                                mutate(questionsFM = factor(questionsFM, levels = levels_names))
      }
       
       df_answersFM_wide <- df_answersFM_long %>% 
         spread(key = questionsFM, value = answersFM)
-      
-      
+
       #answersFS_wide <- reactive(df_answersFM_wide) 
-      
       
       sheet_append(ss, df_answersFM_wide, sheet = "finametrica")
       

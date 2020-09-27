@@ -42,6 +42,8 @@ library(dplyr)
   
   buttons_fq <- list()
   
+  rows <- c(1:24, 26, 28:31, 33)
+  
   for (j in 1:nrow(Q_FM)) {
   
       buttons_fq[[j]] <- prettyRadioButtons(inputId = paste0("fq",Q_FM[j, 1]),

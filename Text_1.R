@@ -152,8 +152,10 @@
                      "Kleine Selbstbeteiligung – höhere Versicherungskosten." = 2,
                      "Große Selbstbeteiligung – geringere Versicherungskosten." = 3,
                      "Sehr große Selbstbeteiligung – geringste Versicherungskosten." = 4),
-  # 25 numeric input
   
+  # 25 numeric input
+  # qfm25 = c(seq(1, 100, 1)),
+    
   # 1
   qfm26 = c("Männlich." = 1,
             "Weiblich." = 2,
@@ -162,7 +164,7 @@
   # 2 numeric input
   
   # 3
-  qfmd28 = c("Ich habe keinen höheren Schulabschluss." = 1,
+  qfm28 = c("Ich habe keinen höheren Schulabschluss." = 1,
             "Ich habe einen höheren Schulabschluss." = 2,
             "Handwerks- oder Diplomabschluss." = 3,
             "Universitäts- oder Hochschulabschluss." = 4),
